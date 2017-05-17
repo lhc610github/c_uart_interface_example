@@ -112,14 +112,14 @@ receive_uav_pos(float x,float y,float z)
 // ---------------------------------------------------------------------------------------------------
 void
 Lcm_Interface::
-q_from_eular(float roll,float pitch,float yaw)
+q_from_eular(float roll1,float pitch1,float yaw1)
 {
-		float cosPhi_2 = cos(roll / 2.0);
-		float sinPhi_2 = sin(roll / 2.0);
-		float cosTheta_2 = cos(pitch / 2.0);
-		float sinTheta_2 = sin(pitch / 2.0);
-		float cosPsi_2 = cos(yaw / 2.0);
-		float sinPsi_2 = sin(yaw / 2.0);
+		float cosPhi_2 = cos(roll1 / 2.0);
+		float sinPhi_2 = sin(roll1 / 2.0);
+		float cosTheta_2 = cos(pitch1 / 2.0);
+		float sinTheta_2 = sin(pitch1 / 2.0);
+		float cosPsi_2 = cos(yaw1 / 2.0);
+		float sinPsi_2 = sin(yaw1 / 2.0);
 
 		/* operations executed in double to avoid loss of precision through
 		 * consecutive multiplications. Result stored as float.
@@ -134,11 +134,11 @@ q_from_eular(float roll,float pitch,float yaw)
 // ---------------------------------------------------------------------------------------------------
 void
 Lcm_Interface::
-receive_uav_att(float roll,float pitch,float yaw)
+receive_uav_att(float roll2,float pitch2,float yaw2)
 {
     att_receive_time = lcm_get_time_usec();
-    printf("ATT : %.2f %.2f %.2f",roll,pitch,yaw);
-    q_from_eular(roll,pitch,yaw);
+    //printf("ATT : %.2f %.2f %.2f \n",roll2,pitch2,yaw2);
+    q_from_eular(roll2,pitch2,yaw2);
     lcm_uav_status.orientation[0]=att_q_from_euler[0];
     lcm_uav_status.orientation[1]=att_q_from_euler[1];
     lcm_uav_status.orientation[2]=att_q_from_euler[2];

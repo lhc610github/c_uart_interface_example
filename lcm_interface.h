@@ -43,8 +43,8 @@ public:
 	int init(int mav_sys_id_);
 	void send_lcm_messages();
 	void receive_uav_pos(float x,float y,float z);
-	void q_from_eular(float roll,float pitch,float yaw);
-    void receive_uav_att(float roll,float pitch,float yaw);
+	void q_from_eular(float roll1,float pitch1,float yaw1);
+   	void receive_uav_att(float roll2,float pitch2,float yaw2);
 	
 	void start();
 	void stop();

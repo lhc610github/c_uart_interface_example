@@ -28,15 +28,20 @@ lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
         const std::string& chan,
         const uav_status::uav_status_t* msg)
 {
-    printf("Received message on channel \"%s\":\n", chan.c_str());
-    printf(" timestamp   = &lld\n", msg->timestamp);
-    printf(" position    = (%f, %f, %f)\n",
-            msg->position[0], msg->position[1], msg->position[2]);
-    printf(" orientation = (%f, %f, %f, %f)\n",
-            msg->orientation[0],msg->orientation[1],
-            msg->orientation[2],msg->orientation[3]);
-    printf(" mode        = %d\n",msg->mode);
-    printf(" send_count  = %lld\n",msg->send_count);
+    //printf("Received message on channel \"%s\":\n", chan.c_str());
+    //printf(" timestamp   = %lld\n", msg->timestamp);
+    //printf(" position    = (%f, %f, %f)\n",
+            //msg->position[0], msg->position[1], msg->position[2]);
+    //printf(" orientation = (%f, %f, %f, %f)\n",
+            //msg->orientation[0],msg->orientation[1],
+            //msg->orientation[2],msg->orientation[3]);
+    //printf(" mode        = %d\n",msg->mode);
+    //printf(" send_count  = %lld\n",msg->send_count);
+    oth_uav_status.timestamp = msg->timestamp;
+    memcpy(oth_uav_status.position,msg->position,sizeof(msg->position));
+    memcpy(oth_uav_status.orientation,msg->orientation,sizeof(msg->orientation));
+    oth_uav_status.mode = msg->mode;
+    oth_uav_status.send_count = msg->send_count;
 }
 
 // ---------------------------------------------------------------------------------------------------

@@ -20,6 +20,17 @@ uint64_t lcm_get_time_usec();
 
 void* start_lcm_interface_send_thread(void *args);
 void* start_lcm_subscribe_thread(void *args);
+class Lcm_Sub_Handler
+{
+
+public:
+    Lcm_Sub_Handler();
+    ~Lcm_Sub_Handler();
+    uav_status::uav_status_t oth_uav_status;
+    string sub_name_channel;
+    bool init_flage;
+    void lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const uav_status::uav_status_t* msg);
+};
 
 class Lcm_Interface
 {
@@ -36,6 +47,7 @@ public:
 	int mav_sys_id;
     int max_num_quad;
 	
+    Lcm_Sub_Handler l_s_handler[4];
 
 	string name_channel;
 	uav_status::uav_status_t lcm_uav_status;
@@ -48,7 +60,6 @@ public:
 	void q_from_eular(float roll1,float pitch1,float yaw1);
    	void receive_uav_att(float roll2,float pitch2,float yaw2);
 	
-void lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const uav_status::uav_status_t* msg);
 	void start();
 	void stop();
 	

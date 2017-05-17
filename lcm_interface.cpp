@@ -13,6 +13,31 @@ lcm_get_time_usec()
     gettimeofday(&_time_stamp2, NULL);
     return _time_stamp2.tv_sec*1000000 + _time_stamp2.tv_usec;
 }
+Lcm_Sub_Handler::
+Lcm_Sub_Handler()
+{
+    init_flage = false;
+}
+Lcm_Sub_Handler::
+~Lcm_Sub_Handler()
+{}
+
+void
+Lcm_Sub_Handler::
+lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
+        const std::string& chan,
+        const uav_status::uav_status_t* msg)
+{
+    printf("Received message on channel \"%s\":\n", chan.c_str());
+    printf(" timestamp   = &lld\n", msg->timestamp);
+    printf(" position    = (%f, %f, %f)\n",
+            msg->position[0], msg->position[1], msg->position[2]);
+    printf(" orientation = (%f, %f, %f, %f)\n",
+            msg->orientation[0],msg->orientation[1],
+            msg->orientation[2],msg->orientation[3]);
+    printf(" mode        = %d\n",msg->mode);
+    printf(" send_count  = %lld\n",msg->send_count);
+}
 
 // ---------------------------------------------------------------------------------------------------
 // Lcm Interface Class 
@@ -208,23 +233,6 @@ start_send_thread()
 // ---------------------------------------------------------------------------------------------------
 void
 Lcm_Interface::
-lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
-        const std::string& chan,
-        const uav_status::uav_status_t* msg)
-{
-    printf("Received message on channel \"%s\":\n", chan.c_str());
-    printf(" timestamp   = &lld\n", msg->timestamp);
-    printf(" position    = (%f, %f, %f)\n",
-            msg->position[0], msg->position[1], msg->position[2]);
-    printf(" orientation = (%f, %f, %f, %f)\n",
-            msg->orientation[0],msg->orientation[1],
-            msg->orientation[2],msg->orientation[3]);
-    printf(" mode        = %d\n",msg->mode);
-    printf(" send_count  = %lld\n",msg->send_count);
-}
-
-void
-Lcm_Interface::
 subscrib_thread(int num_quad)
 {
     stringstream ss1;
@@ -238,7 +246,7 @@ subscrib_thread(int num_quad)
            ss1<<base_channel;
            ss1<<(i+1);
 	printf("sub : %d \n",i);
-           lcm.subscribe(ss1.str(), &Lcm_Interface::lcm_subscrib_function, this);
+           lcm.subscribe(ss1.str(), &Lcm_Sub_Handler::lcm_subscrib_function, &l_s_handler[i]);
            //cout << "Subscrib Channel :" << ss1.str() << endl;
         }
     }

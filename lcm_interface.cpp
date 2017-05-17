@@ -27,6 +27,7 @@ Lcm_Interface()
     // initialize
     send_count = 0;
     pos_receive_time = 0;
+    att_receive_time = 0;
     
     time_to_exit = false;
 
@@ -76,16 +77,20 @@ Lcm_Interface::
 send_lcm_messages()
 {
     send_time = lcm_get_time_usec();
-    if( pos_receive_time!=0 && ((pos_receive_time + 500000) > send_time) && has_init)
+    if( pos_receive_time!=0 && ((pos_receive_time + 500000) > send_time) 
+           &&att_receive_time!=0 && ((att_receive_time + 500000) > send_time) 
+                && has_init)
     {
         send_count ++;
         lcm_uav_status.send_count = send_count;
         lcm.publish(name_channel, &lcm_uav_status);
-     //printf("sending \n");
     }else{
-        if(pos_receive_time!=0){
-        printf("TIME OUT : about %f ms at %f \n",(send_time-pos_receive_time)*0.001,send_time*0.000001);
-        }
+                if (pos_receive_time!=0 && ((pos_receive_time + 500000) > send_time)) {
+                printf("POS TIME OUT : about %f ms at %f \n",(send_time-pos_receive_time)*0.001,send_time*0.000001);
+                }
+                if (att_receive_time!=0 && ((att_receive_time + 500000) > send_time)) {
+                printf("ATT TIME OUT : about %f ms at %f \n",(send_time-att_receive_time)*0.001,send_time*0.000001);
+                }
           }
 }
 
@@ -100,6 +105,43 @@ receive_uav_pos(float x,float y,float z)
     lcm_uav_status.position[0]=x;
     lcm_uav_status.position[1]=y;
     lcm_uav_status.position[2]=z;
+}
+
+// ---------------------------------------------------------------------------------------------------
+//  Get q form eular
+// ---------------------------------------------------------------------------------------------------
+void
+Lcm_Interface::
+q_from_eular(float roll,float pitch,float yaw)
+{
+		double cosPhi_2 = cos(double(roll) / 2.0);
+		double sinPhi_2 = sin(double(roll) / 2.0);
+		double cosTheta_2 = cos(double(pitch) / 2.0);
+		double sinTheta_2 = sin(double(pitch) / 2.0);
+		double cosPsi_2 = cos(double(yaw) / 2.0);
+		double sinPsi_2 = sin(double(yaw) / 2.0);
+
+		/* operations executed in double to avoid loss of precision through
+		 * consecutive multiplications. Result stored as float.
+		 */
+		att_q_from_euler[0] = (float)(cosPhi_2 * cosTheta_2 * cosPsi_2 + sinPhi_2 * sinTheta_2 * sinPsi_2);
+		att_q_from_euler[1] = (float)(sinPhi_2 * cosTheta_2 * cosPsi_2 - cosPhi_2 * sinTheta_2 * sinPsi_2);
+		att_q_from_euler[2] = (float)(cosPhi_2 * sinTheta_2 * cosPsi_2 + sinPhi_2 * cosTheta_2 * sinPsi_2);
+		att_q_from_euler[3] = (float)(cosPhi_2 * cosTheta_2 * sinPsi_2 - sinPhi_2 * sinTheta_2 * cosPsi_2);
+}
+// ---------------------------------------------------------------------------------------------------
+//  Receive Att 
+// ---------------------------------------------------------------------------------------------------
+void
+Lcm_Interface::
+receive_uav_att(float roll,float pitch,float yaw)
+{
+    att_receive_time = lcm_get_time_usec();
+    q_from_eular(roll,pitch,yaw);
+    lcm_uav_status.orientation[0]=att_q_from_euler[0];
+    lcm_uav_status.orientation[1]=att_q_from_euler[1];
+    lcm_uav_status.orientation[2]=att_q_from_euler[2];
+    lcm_uav_status.orientation[3]=att_q_from_euler[3];
 }
 
 // ---------------------------------------------------------------------------------------------------

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <unistd.h>
+#include <math.h>
 
 #include <lcm/lcm-cpp.hpp>
 #include "lcm_msg/uav_status_t.hpp"
@@ -28,6 +29,7 @@ public:
 	
 	uint64_t send_count;
 	uint64_t pos_receive_time;
+	uint64_t att_receive_time;
 	uint64_t send_time;
 	
 	int mav_sys_id;
@@ -41,6 +43,8 @@ public:
 	int init(int mav_sys_id_);
 	void send_lcm_messages();
 	void receive_uav_pos(float x,float y,float z);
+	void q_from_eular(float roll,float pitch,float yaw);
+    void receive_uav_att(float roll,float pitch,float yaw);
 	
 	void start();
 	void stop();
@@ -52,6 +56,7 @@ public:
 private:
 	
 	bool time_to_exit;
+	float att_q_from_euler[4];// quaternion att from euler
 	
 	pthread_t send_tid;
 	lcm::LCM lcm;

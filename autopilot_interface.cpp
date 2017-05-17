@@ -257,11 +257,6 @@ read_messages()
 			// Note this doesn't handle multiple message sources.
 			current_messages.sysid  = message.sysid;
 			current_messages.compid = message.compid;
-			if(!lcm_interface.has_init && message.sysid !=0 )
-			{
-				lcm_interface.init((int)message.sysid);
-				lcm_interface.start();
-			}
 			// Handle Message ID
 			switch (message.msgid)
 			{
@@ -356,7 +351,10 @@ read_messages()
 					mavlink_msg_attitude_decode(&message, &(current_messages.attitude));
 					current_messages.time_stamps.attitude = get_time_usec();
 					this_timestamps.attitude = current_messages.time_stamps.attitude;
-					break;
+					lcm_interface.receive_uav_att(current_messages.attitude.roll,
+					current_messages.attitude.pitch,
+					current_messages.attitude.yaw);
+                    break;
 				}
 
 				default:
@@ -386,7 +384,7 @@ read_messages()
 
 		// give the write thread time to use the port
 		if ( writing_status > false ) {
-			usleep(100); // look for components of batches at 10kHz
+			usleep(500); // look for components of batches at 2kHz
 		}
 
 	} // end: while not received all
@@ -621,6 +619,11 @@ start()
 	{
 		system_id = current_messages.sysid;
 		printf("GOT VEHICLE SYSTEM ID: %i\n", system_id );
+			if(!lcm_interface.has_init && system_id !=0 )
+			{
+				lcm_interface.init((int)system_id);
+				lcm_interface.start();
+			}
 	}
 
 	// Component ID

@@ -12,7 +12,7 @@
 #include <math.h>
 
 #include <lcm/lcm-cpp.hpp>
-#include "lcm_msg/uav_status_t.hpp"
+#include "lcm_msg/uav_status/uav_status_t.hpp"
 using namespace std;
 static string base_channel="uav_status_";
 

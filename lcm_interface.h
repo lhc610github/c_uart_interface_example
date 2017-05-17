@@ -67,7 +67,7 @@ public:
 	void start_send_thread();
     void subscrib_thread(int num_quad);
 	float att_q_from_euler[4];// quaternion att from euler
-	
+	lcm::LCM lcm;
 
 private:
 	
@@ -75,7 +75,6 @@ private:
 	
 	pthread_t send_tid;
 	pthread_t subscrib_tid;
-	lcm::LCM lcm;
 	
 };
 #endif

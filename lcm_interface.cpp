@@ -34,6 +34,7 @@ Lcm_Interface()
     send_tid = 0; // send thread id
 
     mav_sys_id = 0;//mav_sys_id_;
+    max_num_quad = 4;
 
     has_init = false;
 
@@ -157,6 +158,7 @@ start()
     printf("START SEND THREAD \n");
 
     result = pthread_create( &send_tid, NULL, &start_lcm_interface_send_thread, this );
+    result = pthread_create( &subscrib_tid, NULL, &start_lcm_subscribe_thread, &max_num_quad );
     if ( result ) throw result;
 }
 
@@ -172,6 +174,7 @@ stop()
     time_to_exit = true;
 
     pthread_join(send_tid ,NULL);
+    pthread_join(subscrib_tid ,NULL);
 
     printf("\n");
 }
@@ -200,6 +203,46 @@ start_send_thread()
 }
 
 // ---------------------------------------------------------------------------------------------------
+//  Subscrib Thread 
+// ---------------------------------------------------------------------------------------------------
+void
+Lcm_Interface::
+lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
+        const std::string& chan,
+        const uav_status::uav_status_t* msg)
+{
+    printf("Received message on channel \"%s\":\n", chan.c_str());
+    printf(" timestamp   = &lld\n", msg->timestamp);
+    printf(" position    = (%f, %f, %f)\n",
+            msg->position[0], msg->position[1], msg->position[2]);
+    printf(" orientation = (%f, %f, %f, %f)\n",
+            msg->orientation[0],msg->orientation[1],
+            msg->orientation[2],msg->orientation[3]);
+    printf(" mode        = %d\n",msg->mode);
+    printf(" send_count  = %lld\n",msg->send_count);
+}
+
+void
+Lcm_Interface::
+subscrib_thread(int num_quad)
+{
+    stringstream ss;
+    for (int i = 0;i < num_quad; i++)
+    {
+       ss.str("");
+       ss<<base_channel;
+       ss<<(i+1);
+       lcm.subscribe(ss.str(), &Lcm_Interface::lcm_subscrib_function, this);
+       cout << "Subscrib Channel :" << ss.str() << endl;
+    }
+    while( ! time_to_exit )
+    {
+        lcm.handle();
+    }
+
+    return;
+}
+// ---------------------------------------------------------------------------------------------------
 //  Pthread Starter Helper Functions 
 // ---------------------------------------------------------------------------------------------------
 
@@ -208,9 +251,24 @@ start_lcm_interface_send_thread(void *args)
 {
     // takes an lcm object argument
     Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
-
     // run the object's send thread
     lcm_interface->start_send_thread();
+
+    // done!
+    return NULL;
+}
+// ---------------------------------------------------------------------------------------------------
+// lcm subscrib Pthread Starter Helper Functions 
+// ---------------------------------------------------------------------------------------------------
+
+void*
+start_lcm_subscribe_thread(void *args)
+{
+    // takes an lcm object argument
+    Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
+
+    // run the object's subscrib thread
+    lcm_interface->subscrib_thread( *(int *)args );
 
     // done!
     return NULL;

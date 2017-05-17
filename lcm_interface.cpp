@@ -241,8 +241,8 @@ subscrib_thread()
     {
         if( i != (mav_sys_id-1 ))
         {
-           //ss1.str("");
-	   ss1.clear();
+           ss1.str("");
+	   //ss1.clear();
            ss1<<base_channel;
            ss1<<(i+1);
 	   l_s_handler[i].sub_name_channel = ss1.str();

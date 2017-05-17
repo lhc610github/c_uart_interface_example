@@ -47,7 +47,7 @@ public:
 	int mav_sys_id;
     int max_num_quad;
 	
-    Lcm_Sub_Handler l_s_handler;
+    Lcm_Sub_Handler l_s_handler[4];
 
 	string name_channel;
 	uav_status::uav_status_t lcm_uav_status;
@@ -65,7 +65,7 @@ public:
 	
 	void send_thread();
 	void start_send_thread();
-    void subscrib_thread(int num_quad);
+    void subscrib_thread();
 	float att_q_from_euler[4];// quaternion att from euler
 	lcm::LCM lcm;
 

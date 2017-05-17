@@ -184,7 +184,7 @@ start()
     printf("START SEND THREAD \n");
 
     result = pthread_create( &send_tid, NULL, &start_lcm_interface_send_thread, this );
-    result = pthread_create( &subscrib_tid, NULL, &start_lcm_subscribe_thread, &max_num_quad );
+    result = pthread_create( &subscrib_tid, NULL, &start_lcm_subscribe_thread, this );
     if ( result ) throw result;
 }
 
@@ -233,11 +233,11 @@ start_send_thread()
 // ---------------------------------------------------------------------------------------------------
 void
 Lcm_Interface::
-subscrib_thread(int num_quad)
+subscrib_thread()
 {
     stringstream ss1;
    printf("SUBSCRIBE THREAD START \n");
-    for (int i = 0;i < num_quad; i++)
+    for (int i = 0;i < max_num_quad; i++)
     {
         if( i != (mav_sys_id-1 ))
         {
@@ -245,11 +245,9 @@ subscrib_thread(int num_quad)
 	   ss1.clear();
            ss1<<base_channel;
            ss1<<(i+1);
-	   printf("sub : %d \n",i);
-	   l_s_handler.sub_name_channel = ss1.str();
-           lcm.subscribe(l_s_handler.sub_name_channel, &Lcm_Sub_Handler::lcm_subscrib_function, &l_s_handler);
-	   printf("sub done!");
-           //cout << "Subscrib Channel :" << ss1.str() << endl;
+	   l_s_handler[i].sub_name_channel = ss1.str();
+           lcm.subscribe(l_s_handler[i].sub_name_channel, &Lcm_Sub_Handler::lcm_subscrib_function, &l_s_handler[i]);
+           cout << "Subscrib Channel :" << ss1.str() << endl;
         }
     }
     while( ! time_to_exit )
@@ -285,7 +283,7 @@ start_lcm_subscribe_thread(void *args)
     Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
 
     // run the object's subscrib thread
-    lcm_interface->subscrib_thread( *(int *)args );
+    lcm_interface->subscrib_thread();
 
     // done!
     return NULL;

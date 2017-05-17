@@ -245,8 +245,10 @@ subscrib_thread(int num_quad)
 	   ss1.clear();
            ss1<<base_channel;
            ss1<<(i+1);
-	printf("sub : %d \n",i);
-           lcm.subscribe(ss1.str(), &Lcm_Sub_Handler::lcm_subscrib_function, &l_s_handler[i]);
+	   printf("sub : %d \n",i);
+	   l_s_handler[i].sub_name_channel = ss1.str();
+           lcm.subscribe(l_s_handler[i].sub_name_channel, &Lcm_Sub_Handler::lcm_subscrib_function, &l_s_handler[i]);
+	   printf("sub done!");
            //cout << "Subscrib Channel :" << ss1.str() << endl;
         }
     }

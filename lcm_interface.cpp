@@ -83,6 +83,7 @@ send_lcm_messages()
     {
         send_count ++;
         lcm_uav_status.send_count = send_count;
+	lcm_uav_status.timestamp = send_time;
         lcm.publish(name_channel, &lcm_uav_status);
     }else{
                 if (pos_receive_time!=0 && ((pos_receive_time + 500000) > send_time)) {

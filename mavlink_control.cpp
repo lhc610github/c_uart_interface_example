@@ -248,8 +248,9 @@ commands(Autopilot_Interface &api)
 	// local position in ned frame
 	mavlink_local_position_ned_t pos = messages.local_position_ned;
 //	printf("Got message LOCAL_POSITION_NED (spec: https://pixhawk.ethz.ch/mavlink/#LOCAL_POSITION_NED)\n");
-	printf("    pos  (NED):  %f %f %f (m)\n", pos.x, pos.y, pos.z );
-
+	printf("    pos  (NED):  %f   %f   %f (m)\n", pos.x, pos.y, pos.z );
+	mavlink_attitude_t att = messages.attitude;
+	printf("    att       :  %.3f %.3f %.3f  (rad)\n", att.roll, att.pitch, att.yaw );
 	// hires imu
 	//mavlink_highres_imu_t imu = messages.highres_imu;
 	//printf("Got message HIGHRES_IMU (spec: https://pixhawk.ethz.ch/mavlink/#HIGHRES_IMU)\n");

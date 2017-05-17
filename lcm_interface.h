@@ -47,7 +47,7 @@ public:
 	int mav_sys_id;
     int max_num_quad;
 	
-    Lcm_Sub_Handler l_s_handler[4];
+    Lcm_Sub_Handler l_s_handler;
 
 	string name_channel;
 	uav_status::uav_status_t lcm_uav_status;

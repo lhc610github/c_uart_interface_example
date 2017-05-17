@@ -52,6 +52,7 @@ Lcm_Interface::
 init(int mav_sys_id_)
 {
     mav_sys_id = mav_sys_id_;
+    max_num_quad = 4;
     stringstream ss;
     ss<<base_channel;
     ss<<mav_sys_id;
@@ -226,16 +227,19 @@ void
 Lcm_Interface::
 subscrib_thread(int num_quad)
 {
-    stringstream ss;
+    stringstream ss1;
+   printf("SUBSCRIBE THREAD START \n");
     for (int i = 0;i < num_quad; i++)
     {
         if( i != (mav_sys_id-1 ))
         {
-           ss.str("");
-           ss<<base_channel;
-           ss<<(i+1);
-           lcm.subscribe(ss.str(), &Lcm_Interface::lcm_subscrib_function, this);
-           cout << "Subscrib Channel :" << ss.str() << endl;
+           //ss1.str("");
+	   ss1.clear();
+           ss1<<base_channel;
+           ss1<<(i+1);
+	printf("sub : %d \n",i);
+           lcm.subscribe(ss1.str(), &Lcm_Interface::lcm_subscrib_function, this);
+           //cout << "Subscrib Channel :" << ss1.str() << endl;
         }
     }
     while( ! time_to_exit )

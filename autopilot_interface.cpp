@@ -257,7 +257,11 @@ read_messages()
 			// Note this doesn't handle multiple message sources.
 			current_messages.sysid  = message.sysid;
 			current_messages.compid = message.compid;
-
+			if(!lcm_interface.has_init && message.sysid !=0 )
+			{
+				lcm_interface.init((int)message.sysid);
+				lcm_interface.start();
+			}
 			// Handle Message ID
 			switch (message.msgid)
 			{
@@ -304,6 +308,9 @@ read_messages()
 					mavlink_msg_local_position_ned_decode(&message, &(current_messages.local_position_ned));
 					current_messages.time_stamps.local_position_ned = get_time_usec();
 					this_timestamps.local_position_ned = current_messages.time_stamps.local_position_ned;
+					lcm_interface.receive_uav_pos(current_messages.local_position_ned.x,
+					current_messages.local_position_ned.y,
+					current_messages.local_position_ned.z);
 					break;
 				}
 
@@ -699,7 +706,8 @@ stop()
 
 	// now the read and write threads are closed
 	printf("\n");
-
+	
+	lcm_interface.stop();
 	// still need to close the serial_port separately
 }
 

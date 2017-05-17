@@ -62,6 +62,7 @@
 #include <sys/time.h>
 
 #include <common/mavlink.h>
+#include "lcm_interface.h"
 
 // ------------------------------------------------------------------------------
 //   Defines
@@ -271,6 +272,8 @@ public:
 	void start_write_thread(void);
 
 	void handle_quit( int sig );
+	
+	Lcm_Interface lcm_interface;
 
 
 private:

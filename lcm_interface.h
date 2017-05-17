@@ -51,12 +51,12 @@ public:
 	
 	void send_thread();
 	void start_send_thread();
+	float att_q_from_euler[4];// quaternion att from euler
 	
 
 private:
 	
 	bool time_to_exit;
-	float att_q_from_euler[4];// quaternion att from euler
 	
 	pthread_t send_tid;
 	lcm::LCM lcm;

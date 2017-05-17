@@ -229,11 +229,14 @@ subscrib_thread(int num_quad)
     stringstream ss;
     for (int i = 0;i < num_quad; i++)
     {
-       ss.str("");
-       ss<<base_channel;
-       ss<<(i+1);
-       lcm.subscribe(ss.str(), &Lcm_Interface::lcm_subscrib_function, this);
-       cout << "Subscrib Channel :" << ss.str() << endl;
+        if( i != (mav_sys_id-1 ))
+        {
+           ss.str("");
+           ss<<base_channel;
+           ss<<(i+1);
+           lcm.subscribe(ss.str(), &Lcm_Interface::lcm_subscrib_function, this);
+           cout << "Subscrib Channel :" << ss.str() << endl;
+        }
     }
     while( ! time_to_exit )
     {

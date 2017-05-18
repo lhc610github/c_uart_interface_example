@@ -252,12 +252,11 @@ commands(Autopilot_Interface &api)
 	mavlink_attitude_t att = messages.attitude;
 	printf("    att       :  %.3f %.3f %.3f  (rad)\n", att.roll, att.pitch, att.yaw );
     
-    Lcm_Interface Lcm_status = api.lcm_interface;
     for (int _l_i = 0; _l_i < 4 ; _l_i ++)
     {
-    if (Lcm_status.l_s_handler[_l_i].init_flage)
+    if (api.lcm_interface.l_s_handler[_l_i].init_flage)
     {
-       printf("send rate : %f    receive rate : %f \n",Lcm_status.l_s_handler[_l_i].get_send_rate(),Lcm_status.l_s_handler[_l_i].get_receive_rate() );
+       printf("send rate : %f    receive rate : %f \n",api.lcm_interface.l_s_handler[_l_i].get_send_rate(),api.lcm_interface.l_s_handler[_l_i].get_receive_rate() );
     }
     }
    

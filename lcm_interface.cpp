@@ -17,6 +17,14 @@ Lcm_Sub_Handler::
 Lcm_Sub_Handler()
 {
     init_flage = false;
+
+    receive_time = 0; //us
+    last_receive_time = 0; //us
+    last_send_time = 0; //us
+    last_send_count = 0; //us
+    receive_rate = 0; //Hz
+    send_rate =0; //Hz
+
 }
 Lcm_Sub_Handler::
 ~Lcm_Sub_Handler()
@@ -42,8 +50,35 @@ lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
     memcpy(oth_uav_status.orientation,msg->orientation,sizeof(msg->orientation));
     oth_uav_status.mode = msg->mode;
     oth_uav_status.send_count = msg->send_count;
+    receive_time = lcm_get_time_usec();
+    if (last_receive_time!=0)
+    {
+        init_flage = true;
+        receive_rate = (1000000/(float)(receive_time-last_receive_time));
+        send_rate = (1000000*(oth_uav_status.send_count-last_send_count))/(float)(oth_uav_status.timestamp-last_send_time);
+    }
+    else{
+        receive_rate = 0;
+        send_rate = 0;
+    }
+    last_receive_time = receive_time;
+    last_send_time = oth_uav_status.timestamp;
+    last_send_count = msg->send_count;
 }
 
+float
+Lcm_Sub_Handler::
+get_send_rate()
+{
+    return send_rate;
+}
+
+float
+Lcm_Sub_Handler::
+get_receive_rate()
+{
+    return receive_rate;
+}
 // ---------------------------------------------------------------------------------------------------
 // Lcm Interface Class 
 // ---------------------------------------------------------------------------------------------------

@@ -30,6 +30,16 @@ public:
     string sub_name_channel;
     bool init_flage;
     void lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const uav_status::uav_status_t* msg);
+
+    uint64_t receive_time; //us
+    uint64_t last_receive_time; //us
+    uint64_t last_send_time; //us
+    uint64_t last_send_count; //us
+    float receive_rate; //Hz
+    float send_rate; //Hz
+
+    float get_send_rate();
+    float get_receive_rate();
 };
 
 class Lcm_Interface

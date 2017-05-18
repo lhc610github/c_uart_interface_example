@@ -252,6 +252,15 @@ commands(Autopilot_Interface &api)
 	mavlink_attitude_t att = messages.attitude;
 	printf("    att       :  %.3f %.3f %.3f  (rad)\n", att.roll, att.pitch, att.yaw );
     
+    Lcm_Interface Lcm_status = api.lcm_interface;
+    for (int _l_i = 0; _l_i < 4 ; _l_i ++)
+    {
+    if (Lcm_status.l_s_handler[_l_i].init_flage)
+    {
+       printf("send rate : %f    receive rate : %f \n",Lcm_status.l_s_handler[_l_i].get_send_rate(),Lcm_status.l_s_handler[_l_i].get_receive_rate() );
+    }
+    }
+   
 	// hires imu
 	//mavlink_highres_imu_t imu = messages.highres_imu;
 	//printf("Got message HIGHRES_IMU (spec: https://pixhawk.ethz.ch/mavlink/#HIGHRES_IMU)\n");

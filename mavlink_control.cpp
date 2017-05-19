@@ -260,8 +260,8 @@ commands(Autopilot_Interface &api)
             temp_sub = api.lcm_interface.l_s_handler[_l_i];
             if (temp_sub.init_flage)
             {
-               printf("At lcm_channel \"%s\"",temp_sub.sub_name_channel.c_str());
-               printf("send rate : %.3f    receive rate : %.3f \n",temp_sub.get_send_rate(),temp_sub.get_receive_rate() );
+               printf("     At lcm_channel          :\"%s\"\n",temp_sub.sub_name_channel.c_str());
+               printf("     send rate : %.3f    receive rate : %.3f \n",temp_sub.get_send_rate(),temp_sub.get_receive_rate() );
             }
         }
     }

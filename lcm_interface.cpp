@@ -91,7 +91,7 @@ bool
 Lcm_Sub_Handler::
 check_timeout()
 {
-    if (lcm_get_time_usec()-last_send_time > 1000000)
+    if (lcm_get_time_usec()-last_receive_time > 1000000 && init_flage)
     {
         // receive time_out
         reset_mem();

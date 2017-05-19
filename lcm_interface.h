@@ -29,6 +29,7 @@ public:
     uav_status::uav_status_t oth_uav_status;
     string sub_name_channel;
     bool init_flage;
+    void reset_mem();
     void lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const uav_status::uav_status_t* msg);
 
     uint64_t receive_time; //us
@@ -40,6 +41,8 @@ public:
 
     float get_send_rate();
     float get_receive_rate();
+
+    bool check_timeout();
 };
 
 class Lcm_Interface

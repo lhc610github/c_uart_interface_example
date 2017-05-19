@@ -252,12 +252,18 @@ commands(Autopilot_Interface &api)
 	mavlink_attitude_t att = messages.attitude;
 	printf("    att       :  %.3f %.3f %.3f  (rad)\n", att.roll, att.pitch, att.yaw );
     
+    Lcm_Sub_Handler temp_sub;
     for (int _l_i = 0; _l_i < 4 ; _l_i ++)
     {
-    if (api.lcm_interface.l_s_handler[_l_i].init_flage)
-    {
-       printf("send rate : %f    receive rate : %f \n",api.lcm_interface.l_s_handler[_l_i].get_send_rate(),api.lcm_interface.l_s_handler[_l_i].get_receive_rate() );
-    }
+        if (!api.lcm_interface.l_s_handler[_l_i].check_timeout())
+        {
+            temp_sub = api.lcm_interface.l_s_handler[_l_i];
+            if (temp_sub.init_flage)
+            {
+               printf("At lcm_channel \"%s\"",temp_sub.sub_name_channel.c_str());
+               printf("send rate : %.3f    receive rate : %.3f \n",temp_sub.get_send_rate(),temp_sub.get_receive_rate() );
+            }
+        }
     }
    
 	// hires imu

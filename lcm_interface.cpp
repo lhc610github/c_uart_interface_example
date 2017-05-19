@@ -16,6 +16,17 @@ lcm_get_time_usec()
 Lcm_Sub_Handler::
 Lcm_Sub_Handler()
 {
+reset_mem();
+}
+Lcm_Sub_Handler::
+~Lcm_Sub_Handler()
+{}
+
+void
+Lcm_Sub_Handler::
+reset_mem()
+{
+
     init_flage = false;
 
     receive_time = 0; //us
@@ -24,11 +35,7 @@ Lcm_Sub_Handler()
     last_send_count = 0; //us
     receive_rate = 0; //Hz
     send_rate =0; //Hz
-
 }
-Lcm_Sub_Handler::
-~Lcm_Sub_Handler()
-{}
 
 void
 Lcm_Sub_Handler::
@@ -78,6 +85,22 @@ Lcm_Sub_Handler::
 get_receive_rate()
 {
     return receive_rate;
+}
+
+bool
+Lcm_Sub_Handler::
+check_timeout()
+{
+    if (lcm_get_time_usec()-last_send_time > 1000000)
+    {
+        // receive time_out
+        reset_mem();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 // ---------------------------------------------------------------------------------------------------
 // Lcm Interface Class 

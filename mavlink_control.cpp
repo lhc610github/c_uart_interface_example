@@ -262,6 +262,8 @@ commands(Autopilot_Interface &api)
             {
                printf("     At lcm_channel          :\"%s\"\n",temp_sub.sub_name_channel.c_str());
                printf("     send rate : %.3f    receive rate : %.3f \n",temp_sub.get_send_rate(),temp_sub.get_receive_rate() );
+               printf(" pos: [%.3f,%.3f,%.3f]",temp_sub.oth_uav_status.position[0],temp_sub.oth_uav_status.position[1],temp_sub.oth_uav_status.position[2]);
+               printf(" orientation: [%.3f,%.3f,%.3f,%.3f]\n",temp_sub.oth_uav_status.orientation[0],temp_sub.oth_uav_status.orientation[1],temp_sub.oth_uav_status.orientation[2],temp_sub.oth_uav_status.orientation[3]);
             }
         }
     }

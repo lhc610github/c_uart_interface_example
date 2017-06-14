@@ -13,19 +13,23 @@
 
 #include <lcm/lcm-cpp.hpp>
 #include "lcm_msg/uav_status/uav_status_t.hpp"
+#include "lcm_msg/uav_traject/uav_traject_t.hpp"
 using namespace std;
-static string base_channel="uav_status_";
+//static string base_channel="uav_status_";
+static string base_channel="uav_";
+static string status_channel="status_";
+static string traject_channel="traject_";
 
 uint64_t lcm_get_time_usec();
 
 void* start_lcm_interface_send_thread(void *args);
 void* start_lcm_subscribe_thread(void *args);
-class Lcm_Sub_Handler
+class Lcm_u_s_Sub_Handler
 {
 
 public:
-    Lcm_Sub_Handler();
-    ~Lcm_Sub_Handler();
+    Lcm_u_s_Sub_Handler();
+    ~Lcm_u_s_Sub_Handler();
     uav_status::uav_status_t oth_uav_status;
     string sub_name_channel;
     bool init_flage;
@@ -60,7 +64,7 @@ public:
 	int mav_sys_id;
     int max_num_quad;
 	
-    Lcm_Sub_Handler l_s_handler[4];
+    Lcm_u_s_Sub_Handler l_s_handler[4];
 
 	string name_channel;
 	uav_status::uav_status_t lcm_uav_status;

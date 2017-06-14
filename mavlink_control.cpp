@@ -252,7 +252,7 @@ commands(Autopilot_Interface &api)
 	mavlink_attitude_t att = messages.attitude;
 	printf("    att       :  %.3f %.3f %.3f  (rad)\n", att.roll, att.pitch, att.yaw );
     
-    Lcm_Sub_Handler temp_sub;
+    Lcm_u_s_Sub_Handler temp_sub;
     for (int _l_i = 0; _l_i < 4 ; _l_i ++)
     {
         if (!api.lcm_interface.l_s_handler[_l_i].check_timeout())

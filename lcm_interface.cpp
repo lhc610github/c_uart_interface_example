@@ -13,17 +13,17 @@ lcm_get_time_usec()
     gettimeofday(&_time_stamp2, NULL);
     return _time_stamp2.tv_sec*1000000 + _time_stamp2.tv_usec;
 }
-Lcm_Sub_Handler::
-Lcm_Sub_Handler()
+Lcm_u_s_Sub_Handler::
+Lcm_u_s_Sub_Handler()
 {
 reset_mem();
 }
-Lcm_Sub_Handler::
-~Lcm_Sub_Handler()
+Lcm_u_s_Sub_Handler::
+~Lcm_u_s_Sub_Handler()
 {}
 
 void
-Lcm_Sub_Handler::
+Lcm_u_s_Sub_Handler::
 reset_mem()
 {
 
@@ -38,7 +38,7 @@ reset_mem()
 }
 
 void
-Lcm_Sub_Handler::
+Lcm_u_s_Sub_Handler::
 lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
         const std::string& chan,
         const uav_status::uav_status_t* msg)
@@ -74,21 +74,21 @@ lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
 }
 
 float
-Lcm_Sub_Handler::
+Lcm_u_s_Sub_Handler::
 get_send_rate()
 {
     return send_rate;
 }
 
 float
-Lcm_Sub_Handler::
+Lcm_u_s_Sub_Handler::
 get_receive_rate()
 {
     return receive_rate;
 }
 
 bool
-Lcm_Sub_Handler::
+Lcm_u_s_Sub_Handler::
 check_timeout()
 {
     if (lcm_get_time_usec()-last_receive_time > 1000000 && init_flage)
@@ -143,6 +143,7 @@ init(int mav_sys_id_)
     max_num_quad = 4;
     stringstream ss;
     ss<<base_channel;
+    ss<<status_channel;
     ss<<mav_sys_id;
     name_channel = ss.str();
     if (!lcm.good())
@@ -307,9 +308,10 @@ subscrib_thread()
            ss1.str("");
 	   //ss1.clear();
            ss1<<base_channel;
+           ss1<<status_channel;
            ss1<<(i+1);
 	   l_s_handler[i].sub_name_channel = ss1.str();
-           lcm.subscribe(l_s_handler[i].sub_name_channel, &Lcm_Sub_Handler::lcm_subscrib_function, &l_s_handler[i]);
+           lcm.subscribe(l_s_handler[i].sub_name_channel, &Lcm_u_s_Sub_Handler::lcm_subscrib_function, &l_s_handler[i]);
            cout << "Subscrib Channel :" << ss1.str() << endl;
         }
     }

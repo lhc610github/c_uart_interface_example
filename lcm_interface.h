@@ -23,7 +23,8 @@ static string traject_channel="traject_";
 uint64_t lcm_get_time_usec();
 
 void* start_lcm_interface_send_thread(void *args);
-void* start_lcm_subscribe_thread(void *args);
+void* start_lcm_subscribe_thread(void *args); // multi sub for uav_status
+void* start_lcm_u_t_subscribe_thread(void *args); // sub for uav_traject
 class Lcm_u_s_Sub_Handler
 {
 
@@ -49,6 +50,31 @@ public:
     bool check_timeout();
 };
 
+class Lcm_u_t_Sub_Handler
+{
+
+public:
+    Lcm_u_t_Sub_Handler();
+    ~Lcm_u_t_Sub_Handler();
+    uav_traject::uav_traject_t my_traject;
+    string sub_name_channel;
+    bool init_flage;
+    void reset_mem();
+    void lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const uav_traject::uav_traject_t* msg);
+
+    uint64_t receive_time; //us
+    //uint64_t last_receive_time; //us
+    //uint64_t last_send_time; //us
+    //uint64_t last_send_count; //us
+    //float receive_rate; //Hz
+    //float send_rate; //Hz
+
+    //float get_send_rate();
+    //float get_receive_rate();
+
+    //bool check_timeout();
+};
+
 class Lcm_Interface
 {
 
@@ -65,6 +91,7 @@ public:
     int max_num_quad;
 	
     Lcm_u_s_Sub_Handler l_s_handler[4];
+    Lcm_u_t_Sub_Handler l_u_t_handler;
 
 	string name_channel;
 	uav_status::uav_status_t lcm_uav_status;
@@ -82,7 +109,8 @@ public:
 	
 	void send_thread();
 	void start_send_thread();
-    void subscrib_thread();
+    void status_subscrib_thread();
+    void traject_subscrib_thread();
 	float att_q_from_euler[4];// quaternion att from euler
 	lcm::LCM lcm;
 
@@ -92,6 +120,7 @@ private:
 	
 	pthread_t send_tid;
 	pthread_t subscrib_tid;
+	pthread_t traject_subscrib_tid;
 	
 };
 #endif

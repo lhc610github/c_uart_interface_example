@@ -13,6 +13,9 @@ lcm_get_time_usec()
     gettimeofday(&_time_stamp2, NULL);
     return _time_stamp2.tv_sec*1000000 + _time_stamp2.tv_usec;
 }
+// ---------------------------------------------------------------------------------------------------
+// LCM uav_status topic Handler
+// ---------------------------------------------------------------------------------------------------
 Lcm_u_s_Sub_Handler::
 Lcm_u_s_Sub_Handler()
 {
@@ -100,6 +103,79 @@ check_timeout()
     else
     {
         return false;
+    }
+}
+// ---------------------------------------------------------------------------------------------------
+// LCM 'uav_traject' topic Handler
+// ---------------------------------------------------------------------------------------------------
+Lcm_u_t_Sub_Handler::
+Lcm_u_t_Sub_Handler()
+{
+reset_mem();
+}
+Lcm_u_t_Sub_Handler::
+~Lcm_u_t_Sub_Handler()
+{}
+
+void
+Lcm_u_t_Sub_Handler::
+reset_mem()
+{
+
+    init_flage = false;
+
+    receive_time = 0; //us
+    //last_receive_time = 0; //us
+    //last_send_time = 0; //us
+    //last_send_count = 0; //us
+    //receive_rate = 0; //Hz
+    //send_rate =0; //Hz
+}
+
+void
+Lcm_u_t_Sub_Handler::
+lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf,
+        const std::string& chan,
+        const uav_traject::uav_traject_t* msg)
+{
+    printf("Received message on channel \"%s\":\n", chan.c_str());
+    printf(" timestamp   = %lld\n", msg->timestamp);
+    printf(" num_keyframe   = %d\n", msg->num_keyframe);
+    printf(" order+1 = %d\n", msg->order_p_1);
+    printf(" t = [");
+    for (int i=0; i< msg->num_keyframe;i++)
+        printf("%.2f ",msg->t[i]);
+    printf(" ]\n");
+    printf("trajectory:\n");
+    for (int i=0; i< msg->num_keyframe; i++)
+    {
+        printf("\t\tphase%d:\n",i);
+        for (int k=0; k< 4; k++)
+        {
+        printf("\t\t\t\t");
+            for (int j=0; j< msg->order_p_1; j++)
+            {
+                printf("%.2f ",msg->traject[i][j][k]);
+            }
+        printf("\n");
+        }
+    }
+
+    init_flage = true;
+    my_traject.timestamp = msg->timestamp;
+    my_traject.num_keyframe= msg->num_keyframe;
+    my_traject.order_p_1 = msg->order_p_1;
+    for (int i=0; i< msg->num_keyframe; i++)
+        my_traject.t[i] = msg->t[i];
+    for (int i=0; i< msg->num_keyframe; i++)
+    {
+        for (int k=0; k< 4; k++)
+        {
+            for (int j=0; j< msg->order_p_1; j++)
+            {
+                my_traject.traject[i][j][k] = msg->traject[i][j][k];
+            }
+        }
     }
 }
 // ---------------------------------------------------------------------------------------------------
@@ -249,6 +325,7 @@ start()
 
     result = pthread_create( &send_tid, NULL, &start_lcm_interface_send_thread, this );
     result = pthread_create( &subscrib_tid, NULL, &start_lcm_subscribe_thread, this );
+    result = pthread_create( &traject_subscrib_tid, NULL, &start_lcm_u_t_subscribe_thread, this );
     if ( result ) throw result;
 }
 
@@ -293,14 +370,14 @@ start_send_thread()
 }
 
 // ---------------------------------------------------------------------------------------------------
-//  Subscrib Thread 
+//  Subscrib Thread  for 'uav_status' topic
 // ---------------------------------------------------------------------------------------------------
 void
 Lcm_Interface::
-subscrib_thread()
+status_subscrib_thread()
 {
     stringstream ss1;
-   printf("SUBSCRIBE THREAD START \n");
+   printf("STATUS SUBSCRIBE THREAD START \n");
     for (int i = 0;i < max_num_quad; i++)
     {
         if( i != (mav_sys_id-1 ))
@@ -315,6 +392,30 @@ subscrib_thread()
            cout << "Subscrib Channel :" << ss1.str() << endl;
         }
     }
+    while( ! time_to_exit )
+    {
+        lcm.handle();
+    }
+
+    return;
+}
+
+// ---------------------------------------------------------------------------------------------------
+//  Subscrib Thread  for 'uav_traject' topic
+// ---------------------------------------------------------------------------------------------------
+void
+Lcm_Interface::
+traject_subscrib_thread()
+{
+    stringstream ss1;
+   printf("TRAJECT SUBSCRIBE THREAD START \n");
+           ss1.str("");
+           ss1<<base_channel;
+           ss1<<traject_channel;
+           ss1<<mav_sys_id;
+	       l_u_t_handler.sub_name_channel = ss1.str();
+           lcm.subscribe(l_u_t_handler.sub_name_channel, &Lcm_u_t_Sub_Handler::lcm_u_t_subscrib_function, &l_u_t_handler);
+           cout << "Subscrib Channel :" << ss1.str() << endl;
     while( ! time_to_exit )
     {
         lcm.handle();
@@ -348,7 +449,24 @@ start_lcm_subscribe_thread(void *args)
     Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
 
     // run the object's subscrib thread
-    lcm_interface->subscrib_thread();
+    lcm_interface->status_subscrib_thread();
+
+    // done!
+    return NULL;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// lcm subscrib Pthread Starter Helper Functions  for 'uav_traject' topic
+// ---------------------------------------------------------------------------------------------------
+
+void*
+start_lcm_u_t_subscribe_thread(void *args)
+{
+    // takes an lcm object argument
+    Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
+
+    // run the object's subscrib thread
+    lcm_interface->traject_subscrib_thread();
 
     // done!
     return NULL;

@@ -116,10 +116,10 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
     printf("trajectory:\n");
     for (int i=0; i< msg->num_keyframe; i++)
     {
-        printf("\t\tphase%d:\n",i);
+        printf("\tphase%d:\n",i);
         for (int k=0; k< 4; k++)
         {
-        printf("\t\t\t\t");
+        printf("\t\t");
             for (int j=0; j< msg->order_p_1; j++)
             {
                 printf("%.2f ",msg->traject[i][j][k]);
@@ -132,14 +132,14 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
     my_traject.timestamp = msg->timestamp;
     my_traject.num_keyframe= msg->num_keyframe;
     my_traject.order_p_1 = msg->order_p_1;
-    for (int i=0; i< msg->num_keyframe; i++)
+    for (int i=0; i< my_traject.num_keyframe; i++)
         my_traject.t[i] = msg->t[i];
     printf(" get traject.t \n");
-    for (int i=0; i< msg->num_keyframe; i++)
+    for (int i=0; i< my_traject.num_keyframe; i++)
     {
         for (int k=0; k< 4; k++)
         {
-            for (int j=0; j< msg->order_p_1; j++)
+            for (int j=0; j< my_traject.order_p_1; j++)
             {
                 my_traject.traject[i][j][k] = msg->traject[i][j][k];
             }

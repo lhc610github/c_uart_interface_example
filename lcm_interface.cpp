@@ -1,34 +1,24 @@
-// ---------------------------------------------------------------------------------------------------
-// Includes
+// --------------------------------------------------------------------------------------------------- 
+// Includes 
 // ---------------------------------------------------------------------------------------------------
 
 #include "lcm_interface.h"
-// ---------------------------------------------------------------------------------------------------
-// Time
-// ---------------------------------------------------------------------------------------------------
-uint64_t
-lcm_get_time_usec()
-{
+// --------------------------------------------------------------------------------------------------- 
+// Time 
+// --------------------------------------------------------------------------------------------------- 
+uint64_t lcm_get_time_usec() {
     static struct timeval _time_stamp2;
     gettimeofday(&_time_stamp2, NULL);
     return _time_stamp2.tv_sec*1000000 + _time_stamp2.tv_usec;
 }
+// --------------------------------------------------------------------------------------------------- 
+// LCM uav_status topic Handler 
 // ---------------------------------------------------------------------------------------------------
-// LCM uav_status topic Handler
-// ---------------------------------------------------------------------------------------------------
-Lcm_u_s_Sub_Handler::
-Lcm_u_s_Sub_Handler()
-{
-reset_mem();
+ Lcm_u_s_Sub_Handler:: Lcm_u_s_Sub_Handler() { reset_mem();
 }
-Lcm_u_s_Sub_Handler::
-~Lcm_u_s_Sub_Handler()
-{}
+Lcm_u_s_Sub_Handler:: ~Lcm_u_s_Sub_Handler() {}
 
-void
-Lcm_u_s_Sub_Handler::
-reset_mem()
-{
+void Lcm_u_s_Sub_Handler:: reset_mem() {
 
     init_flage = false;
 
@@ -40,21 +30,18 @@ reset_mem()
     send_rate =0; //Hz
 }
 
-void
-Lcm_u_s_Sub_Handler::
-lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
+void Lcm_u_s_Sub_Handler:: lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
         const std::string& chan,
-        const uav_status::uav_status_t* msg)
-{
+        const uav_status::uav_status_t* msg) {
     //printf("Received message on channel \"%s\":\n", chan.c_str());
-    //printf(" timestamp   = %lld\n", msg->timestamp);
-    //printf(" position    = (%f, %f, %f)\n",
+    //printf(" timestamp = %lld\n", msg->timestamp);
+    //printf(" position = (%f, %f, %f)\n",
             //msg->position[0], msg->position[1], msg->position[2]);
     //printf(" orientation = (%f, %f, %f, %f)\n",
             //msg->orientation[0],msg->orientation[1],
             //msg->orientation[2],msg->orientation[3]);
-    //printf(" mode        = %d\n",msg->mode);
-    //printf(" send_count  = %lld\n",msg->send_count);
+    //printf(" mode = %d\n",msg->mode);
+    //printf(" send_count = %lld\n",msg->send_count);
     oth_uav_status.timestamp = msg->timestamp;
     memcpy(oth_uav_status.position,msg->position,sizeof(msg->position));
     memcpy(oth_uav_status.orientation,msg->orientation,sizeof(msg->orientation));
@@ -76,24 +63,15 @@ lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
     last_send_count = msg->send_count;
 }
 
-float
-Lcm_u_s_Sub_Handler::
-get_send_rate()
-{
+float Lcm_u_s_Sub_Handler:: get_send_rate() {
     return send_rate;
 }
 
-float
-Lcm_u_s_Sub_Handler::
-get_receive_rate()
-{
+float Lcm_u_s_Sub_Handler:: get_receive_rate() {
     return receive_rate;
 }
 
-bool
-Lcm_u_s_Sub_Handler::
-check_timeout()
-{
+bool Lcm_u_s_Sub_Handler:: check_timeout() {
     if (lcm_get_time_usec()-last_receive_time > 1000000 && init_flage)
     {
         // receive time_out
@@ -105,22 +83,14 @@ check_timeout()
         return false;
     }
 }
+// --------------------------------------------------------------------------------------------------- 
+// LCM 'uav_traject' topic Handler 
 // ---------------------------------------------------------------------------------------------------
-// LCM 'uav_traject' topic Handler
-// ---------------------------------------------------------------------------------------------------
-Lcm_u_t_Sub_Handler::
-Lcm_u_t_Sub_Handler()
-{
-reset_mem();
+Lcm_u_t_Sub_Handler:: Lcm_u_t_Sub_Handler() { reset_mem();
 }
-Lcm_u_t_Sub_Handler::
-~Lcm_u_t_Sub_Handler()
-{}
+Lcm_u_t_Sub_Handler:: ~Lcm_u_t_Sub_Handler() {}
 
-void
-Lcm_u_t_Sub_Handler::
-reset_mem()
-{
+void Lcm_u_t_Sub_Handler:: reset_mem() {
 
     init_flage = false;
 
@@ -132,15 +102,12 @@ reset_mem()
     //send_rate =0; //Hz
 }
 
-void
-Lcm_u_t_Sub_Handler::
-lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf,
+void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf,
         const std::string& chan,
-        const uav_traject::uav_traject_t* msg)
-{
+        const uav_traject::uav_traject_t* msg) {
     printf("Received message on channel \"%s\":\n", chan.c_str());
-    printf(" timestamp   = %lld\n", msg->timestamp);
-    printf(" num_keyframe   = %d\n", msg->num_keyframe);
+    printf(" timestamp = %lld\n", msg->timestamp);
+    printf(" num_keyframe = %d\n", msg->num_keyframe);
     printf(" order+1 = %d\n", msg->order_p_1);
     printf(" t = [");
     for (int i=0; i< msg->num_keyframe;i++)
@@ -160,13 +127,14 @@ lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf,
         printf("\n");
         }
     }
-
+    printf(" traject print done \n");
     init_flage = true;
     my_traject.timestamp = msg->timestamp;
     my_traject.num_keyframe= msg->num_keyframe;
     my_traject.order_p_1 = msg->order_p_1;
     for (int i=0; i< msg->num_keyframe; i++)
         my_traject.t[i] = msg->t[i];
+    printf(" get traject.t \n");
     for (int i=0; i< msg->num_keyframe; i++)
     {
         for (int k=0; k< 4; k++)
@@ -177,17 +145,16 @@ lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf,
             }
         }
     }
+    printf(" get traject.traject \n");
 }
-// ---------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------- 
 // Lcm Interface Class 
 // ---------------------------------------------------------------------------------------------------
 
-// ---------------------------------------------------------------------------------------------------
-//  Con/De structors 
-// ---------------------------------------------------------------------------------------------------
-Lcm_Interface::
-Lcm_Interface()
-{
+// --------------------------------------------------------------------------------------------------- 
+// Con/De structors 
+// --------------------------------------------------------------------------------------------------- 
+Lcm_Interface:: Lcm_Interface() {
     // initialize
     send_count = 0;
     pos_receive_time = 0;
@@ -204,17 +171,12 @@ Lcm_Interface()
 
 }
 
-Lcm_Interface::
-~Lcm_Interface()
-{}
+Lcm_Interface:: ~Lcm_Interface() {}
 
-// ---------------------------------------------------------------------------------------------------
-//  Init 
-// ---------------------------------------------------------------------------------------------------
-int
-Lcm_Interface::
-init(int mav_sys_id_)
-{
+// --------------------------------------------------------------------------------------------------- 
+// Init 
+// --------------------------------------------------------------------------------------------------- 
+int Lcm_Interface:: init(int mav_sys_id_) {
     mav_sys_id = mav_sys_id_;
     max_num_quad = 4;
     stringstream ss;
@@ -236,16 +198,13 @@ init(int mav_sys_id_)
     }
 }
 
-// ---------------------------------------------------------------------------------------------------
-//  Send Messages 
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-send_lcm_messages()
-{
+// --------------------------------------------------------------------------------------------------- 
+// Send Messages 
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: send_lcm_messages() {
     send_time = lcm_get_time_usec();
-    if( pos_receive_time!=0 && ((pos_receive_time + 500000) > send_time) 
-           &&att_receive_time!=0 && ((att_receive_time + 500000) > send_time) 
+    if( pos_receive_time!=0 && ((pos_receive_time + 500000) > send_time)
+           &&att_receive_time!=0 && ((att_receive_time + 500000) > send_time)
                 && has_init)
     {
         send_count ++;
@@ -262,12 +221,10 @@ send_lcm_messages()
           }
 }
 
-// ---------------------------------------------------------------------------------------------------
-//  Receive Pos 
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-receive_uav_pos(float x,float y,float z)
+// --------------------------------------------------------------------------------------------------- 
+// Receive Pos
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: receive_uav_pos(float x,float y,float z) 
 {
     pos_receive_time = lcm_get_time_usec();
     lcm_uav_status.position[0]=x;
@@ -275,13 +232,10 @@ receive_uav_pos(float x,float y,float z)
     lcm_uav_status.position[2]=z;
 }
 
-// ---------------------------------------------------------------------------------------------------
-//  Get q form eular
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-q_from_eular(float roll1,float pitch1,float yaw1)
-{
+// --------------------------------------------------------------------------------------------------- 
+// Get q form eular 
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: q_from_eular(float roll1,float pitch1,float yaw1) {
 		float cosPhi_2 = cos(roll1 / 2.0);
 		float sinPhi_2 = sin(roll1 / 2.0);
 		float cosTheta_2 = cos(pitch1 / 2.0);
@@ -297,13 +251,10 @@ q_from_eular(float roll1,float pitch1,float yaw1)
 		att_q_from_euler[2] = (float)(cosPhi_2 * sinTheta_2 * cosPsi_2 + sinPhi_2 * cosTheta_2 * sinPsi_2);
 		att_q_from_euler[3] = (float)(cosPhi_2 * cosTheta_2 * sinPsi_2 - sinPhi_2 * sinTheta_2 * cosPsi_2);
 }
-// ---------------------------------------------------------------------------------------------------
-//  Receive Att 
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-receive_uav_att(float roll2,float pitch2,float yaw2)
-{
+// --------------------------------------------------------------------------------------------------- 
+// Receive Att 
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: receive_uav_att(float roll2,float pitch2,float yaw2) {
     att_receive_time = lcm_get_time_usec();
     //printf("ATT : %.2f %.2f %.2f \n",roll2,pitch2,yaw2);
     q_from_eular(roll2,pitch2,yaw2);
@@ -313,13 +264,10 @@ receive_uav_att(float roll2,float pitch2,float yaw2)
     lcm_uav_status.orientation[3]=att_q_from_euler[3];
 }
 
-// ---------------------------------------------------------------------------------------------------
-//  STARTUP 
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-start()
-{
+// --------------------------------------------------------------------------------------------------- 
+// STARTUP 
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: start() {
     int result;
     printf("START SEND THREAD \n");
 
@@ -329,13 +277,10 @@ start()
     if ( result ) throw result;
 }
 
-// ---------------------------------------------------------------------------------------------------
-//  SHUTDOWN 
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-stop()
-{
+// --------------------------------------------------------------------------------------------------- 
+// SHUTDOWN 
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: stop() {
     printf("CLOSE LCM THREAD\n");
 
     time_to_exit = true;
@@ -346,13 +291,10 @@ stop()
     printf("\n");
 }
 
-// ---------------------------------------------------------------------------------------------------
-//  Send Thread 
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-send_thread()
-{
+// --------------------------------------------------------------------------------------------------- 
+// Send Thread 
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: send_thread() {
     while( ! time_to_exit )
     {
         send_lcm_messages();
@@ -361,21 +303,15 @@ send_thread()
 
     return;
 }
-void
-Lcm_Interface::
-start_send_thread()
-{
+void Lcm_Interface:: start_send_thread() {
     send_thread();
     return;
 }
 
 // ---------------------------------------------------------------------------------------------------
-//  Subscrib Thread  for 'uav_status' topic
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-status_subscrib_thread()
-{
+// Subscrib Thread for 'uav_status' topic 
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: status_subscrib_thread() {
     stringstream ss1;
    printf("STATUS SUBSCRIBE THREAD START \n");
     for (int i = 0;i < max_num_quad; i++)
@@ -400,13 +336,10 @@ status_subscrib_thread()
     return;
 }
 
-// ---------------------------------------------------------------------------------------------------
-//  Subscrib Thread  for 'uav_traject' topic
-// ---------------------------------------------------------------------------------------------------
-void
-Lcm_Interface::
-traject_subscrib_thread()
-{
+// --------------------------------------------------------------------------------------------------- 
+// Subscrib Thread for 'uav_traject' topic
+// --------------------------------------------------------------------------------------------------- 
+void Lcm_Interface:: traject_subscrib_thread() {
     stringstream ss1;
    printf("TRAJECT SUBSCRIBE THREAD START \n");
            ss1.str("");
@@ -423,13 +356,11 @@ traject_subscrib_thread()
 
     return;
 }
-// ---------------------------------------------------------------------------------------------------
-//  Pthread Starter Helper Functions 
+// --------------------------------------------------------------------------------------------------- 
+// Pthread Starter Helper Functions 
 // ---------------------------------------------------------------------------------------------------
 
-void*
-start_lcm_interface_send_thread(void *args)
-{
+void* start_lcm_interface_send_thread(void *args) {
     // takes an lcm object argument
     Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
     // run the object's send thread
@@ -438,13 +369,11 @@ start_lcm_interface_send_thread(void *args)
     // done!
     return NULL;
 }
-// ---------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------- 
 // lcm subscrib Pthread Starter Helper Functions 
 // ---------------------------------------------------------------------------------------------------
 
-void*
-start_lcm_subscribe_thread(void *args)
-{
+void* start_lcm_subscribe_thread(void *args) {
     // takes an lcm object argument
     Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
 
@@ -455,13 +384,11 @@ start_lcm_subscribe_thread(void *args)
     return NULL;
 }
 
-// ---------------------------------------------------------------------------------------------------
-// lcm subscrib Pthread Starter Helper Functions  for 'uav_traject' topic
+// --------------------------------------------------------------------------------------------------- 
+// lcm subscrib Pthread Starter Helper Functions for 'uav_traject' topic 
 // ---------------------------------------------------------------------------------------------------
 
-void*
-start_lcm_u_t_subscribe_thread(void *args)
-{
+void* start_lcm_u_t_subscribe_thread(void *args) {
     // takes an lcm object argument
     Lcm_Interface *lcm_interface = (Lcm_Interface *)args;
 

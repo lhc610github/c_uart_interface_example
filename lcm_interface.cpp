@@ -129,19 +129,20 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
     }
     printf(" traject print done \n");
     init_flage = true;
-    my_traject.timestamp = msg->timestamp;
-    my_traject.num_keyframe= msg->num_keyframe;
-    my_traject.order_p_1 = msg->order_p_1;
-    for (int i=0; i< my_traject.num_keyframe; i++)
-        my_traject.t[i] = msg->t[i];
+    receive_time = lcm_get_time_usec();
+    PC_time = msg->timestamp;
+    num_keyframe= msg->num_keyframe;
+    order_p_1 = msg->order_p_1;
+    for (int i=0; i< num_keyframe; i++)
+        t[i] = msg->t[i];
     printf(" get traject.t \n");
-    for (int i=0; i< my_traject.num_keyframe; i++)
+    for (int i=0; i< num_keyframe; i++)
     {
         for (int k=0; k< 4; k++)
         {
-            for (int j=0; j< my_traject.order_p_1; j++)
+            for (int j=0; j< order_p_1; j++)
             {
-                my_traject.traject[i][j][k] = msg->traject[i][j][k];
+                traject[i][j][k] = msg->traject[i][j][k];
             }
         }
     }

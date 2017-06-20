@@ -504,6 +504,7 @@ write_ca_traject()
         // check the write
         if ( len <= 0 )
             fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
+        printf("SEND CA_TRAJECT %d \n",j);
         //	else
         //		printf("%lu POSITION_TARGET  = [ %f , %f , %f ] \n", write_count, position_target.x, position_target.y, position_target.z);
         }

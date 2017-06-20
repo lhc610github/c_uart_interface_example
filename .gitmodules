@@ -1,3 +1,0 @@
-[submodule "mavlink/include/mavlink/v1.0"]
-	path = mavlink/include/mavlink/v1.0
-	url = https://github.com/lhc610github/mavlink_v1_test

@@ -264,6 +264,8 @@ public:
 
 	void enable_offboard_control();
 	void disable_offboard_control();
+    
+    void write_ca_traject();
 
 	void start();
 	void stop();

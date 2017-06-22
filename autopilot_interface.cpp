@@ -474,8 +474,17 @@ write_ca_traject()
         {
         // get the traject
         ca_traject.time_usec = (uint64_t) get_time_usec();
-        ca_traject.t[0] = lcm_interface.l_u_t_handler.t[j];
-        ca_traject.t[1] = lcm_interface.l_u_t_handler.t[j+1];
+        if(j == 0)
+        {
+        ca_traject.t[0] = 0;
+        ca_traject.t[1] = lcm_interface.l_u_t_handler.t[j];
+        }
+        else
+        {
+        ca_traject.t[0] = lcm_interface.l_u_t_handler.t[j-1];
+        ca_traject.t[1] = lcm_interface.l_u_t_handler.t[j];
+        }
+
         for(int i=0; i<7 ;i++)
         {
             ca_traject.trajectory_coefficient_x[i] = lcm_interface.l_u_t_handler.traject[j][i][0];

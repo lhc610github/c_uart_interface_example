@@ -110,7 +110,7 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
     printf(" num_keyframe = %d\n", msg->num_keyframe);
     printf(" order+1 = %d\n", msg->order_p_1);
     printf(" t = [");
-    for (int i=0; i< msg->num_keyframe;i++)
+    for (int i=0; i< msg->num_keyframe+1;i++)
         printf("%.2f ",msg->t[i]);
     printf(" ]\n");
     printf("trajectory:\n");

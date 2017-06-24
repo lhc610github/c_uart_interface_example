@@ -474,6 +474,7 @@ write_ca_traject()
         {
         // get the traject
         ca_traject.time_usec = (uint64_t) get_time_usec();
+        ca_traject.PC_time_usec = (uint64_t) lcm_interface.timestamp;
         if(j == 0)
         {
         ca_traject.t[0] = 0;

@@ -95,18 +95,13 @@ void Lcm_u_t_Sub_Handler:: reset_mem() {
     init_flage = false;
 
     receive_time = 0; //us
-    //last_receive_time = 0; //us
-    //last_send_time = 0; //us
-    //last_send_count = 0; //us
-    //receive_rate = 0; //Hz
-    //send_rate =0; //Hz
 }
 
 void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf,
         const std::string& chan,
         const uav_traject::uav_traject_t* msg) {
     printf("Received message on channel \"%s\":\n", chan.c_str());
-    printf(" timestamp = %lld\n", msg->timestamp);
+    //printf(" timestamp = %lld\n", msg->timestamp);
     printf(" num_keyframe = %d\n", msg->num_keyframe);
     printf(" order+1 = %d\n", msg->order_p_1);
     printf(" t = [");
@@ -212,7 +207,14 @@ void Lcm_Interface:: send_lcm_messages() {
     {
         send_count ++;
         lcm_uav_status.send_count = send_count;
-	lcm_uav_status.timestamp = send_time;
+	    lcm_uav_status.timestamp = send_time;
+        /* */
+        if (l_u_t_handler.init_flage) {
+            lcm_uav_status.mode = 3;
+        }
+        else {
+            lcm_uav_status.mode = 1;
+        }
         lcm.publish(name_channel, &lcm_uav_status);
     }else{
                 if (pos_receive_time!=0 && ((pos_receive_time + 500000) > send_time)) {

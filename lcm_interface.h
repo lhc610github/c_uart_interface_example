@@ -67,6 +67,7 @@ public:
     int order_p_1; // less than 8
     float t[11];
     float traject[10][7][4]; // num_keyframe|order_p_1|4
+    bool has_received;
     //uint64_t last_receive_time; //us
     //uint64_t last_send_time; //us
     //uint64_t last_send_count; //us

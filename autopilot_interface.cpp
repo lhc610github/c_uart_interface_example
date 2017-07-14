@@ -471,6 +471,8 @@ write_ca_traject()
     if (lcm_interface.l_u_t_handler.init_flage)
     {
         uint64_t _now = get_time_usec();
+        printf("now time is %lld \n ",_now);
+        printf("PC time is %lld \n ",lcm_interface.l_u_t_handler.PC_time);
         if (_now > lcm_interface.l_u_t_handler.PC_time)
         {
             double _delta_t = (double)(_now - lcm_interface.l_u_t_handler.PC_time)/1000000;

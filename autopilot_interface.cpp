@@ -468,34 +468,6 @@ write_ca_traject()
 	// pull from position target
 	mavlink_ca_traject_t ca_traject;
 
-    if(lcm_interface.l_u_t_handler.init_flage)
-    {
-        for (int j=0 ;j < lcm_interface.l_u_t_handler.num_keyframe; j++)
-        {
-        // get the traject
-        ca_traject.time_usec = (uint64_t) get_time_usec();
-        ca_traject.PC_time_usec = (uint64_t) lcm_interface.l_u_t_handler.PC_time;
-        if(j == 0)
-        {
-        ca_traject.t[0] = 0;
-        ca_traject.t[1] = lcm_interface.l_u_t_handler.t[j];
-        }
-        else
-        {
-        ca_traject.t[0] = lcm_interface.l_u_t_handler.t[j-1];
-        ca_traject.t[1] = lcm_interface.l_u_t_handler.t[j];
-        }
-
-        for(int i=0; i<7 ;i++)
-        {
-            ca_traject.trajectory_coefficient_x[i] = lcm_interface.l_u_t_handler.traject[j][i][0];
-            ca_traject.trajectory_coefficient_y[i] = lcm_interface.l_u_t_handler.traject[j][i][1];
-            ca_traject.trajectory_coefficient_z[i] = lcm_interface.l_u_t_handler.traject[j][i][2];
-            ca_traject.trajectory_coefficient_r[i] = lcm_interface.l_u_t_handler.traject[j][i][3];
-        }
-        ca_traject.num_keyframe = (uint8_t)lcm_interface.l_u_t_handler.num_keyframe;
-        ca_traject.order_p_1 = (uint8_t)lcm_interface.l_u_t_handler.order_p_1;
-        ca_traject.index_keyframe = (uint8_t)(j+1);
         // --------------------------------------------------------------------------
         //   ENCODE
         // --------------------------------------------------------------------------
@@ -514,12 +486,7 @@ write_ca_traject()
         // check the write
         if ( len <= 0 )
             fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
-        printf("SEND CA_TRAJECT %d \n",j);
         usleep(300);
-        //	else
-        //		printf("%lu POSITION_TARGET  = [ %f , %f , %f ] \n", write_count, position_target.x, position_target.y, position_target.z);
-        }
-    }
 	return;
 }
 

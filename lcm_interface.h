@@ -64,9 +64,9 @@ public:
     uint64_t receive_time; //us
     uint64_t PC_time; //us PC send traject time
     int num_keyframe; // less than 10
-    int order_p_1; // less than 8
-    float t[11];
-    float traject[10][7][4]; // num_keyframe|order_p_1|4
+    int order_p_1; // less than 10
+    double t[11];
+    double traject[10][10][4]; // num_keyframe|order_p_1|4
     bool has_received;
     //uint64_t last_receive_time; //us
     //uint64_t last_send_time; //us

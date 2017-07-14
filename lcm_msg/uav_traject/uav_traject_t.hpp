@@ -23,9 +23,9 @@ class uav_traject_t
 
         int8_t     order_p_1;
 
-        std::vector< float > t;
+        std::vector< double > t;
 
-        std::vector< std::vector< std::vector< float > > > traject;
+        std::vector< std::vector< std::vector< double > > > traject;
 
     public:
         /**
@@ -133,13 +133,13 @@ int uav_traject_t::_encodeNoHash(void *buf, int offset, int maxlen) const
     if(tlen < 0) return tlen; else pos += tlen;
 
     if(this->num_keyframe > 0) {
-        tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->t[0], this->num_keyframe);
+        tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->t[0], this->num_keyframe);
         if(tlen < 0) return tlen; else pos += tlen;
     }
 
     for (int a0 = 0; a0 < this->num_keyframe; a0++) {
         for (int a1 = 0; a1 < this->order_p_1; a1++) {
-            tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->traject[a0][a1][0], 4);
+            tlen = __double_encode_array(buf, offset + pos, maxlen - pos, &this->traject[a0][a1][0], 4);
             if(tlen < 0) return tlen; else pos += tlen;
         }
     }
@@ -162,7 +162,7 @@ int uav_traject_t::_decodeNoHash(const void *buf, int offset, int maxlen)
 
     if(this->num_keyframe) {
         this->t.resize(this->num_keyframe);
-        tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->t[0], this->num_keyframe);
+        tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->t[0], this->num_keyframe);
         if(tlen < 0) return tlen; else pos += tlen;
     }
 
@@ -172,7 +172,7 @@ int uav_traject_t::_decodeNoHash(const void *buf, int offset, int maxlen)
         for (int a1 = 0; a1 < this->order_p_1; a1++) {
             if(4) {
                 this->traject[a0][a1].resize(4);
-                tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->traject[a0][a1][0], 4);
+                tlen = __double_decode_array(buf, offset + pos, maxlen - pos, &this->traject[a0][a1][0], 4);
                 if(tlen < 0) return tlen; else pos += tlen;
             }
         }
@@ -187,14 +187,14 @@ int uav_traject_t::_getEncodedSizeNoHash() const
     enc_size += __int64_t_encoded_array_size(NULL, 1);
     enc_size += __int8_t_encoded_array_size(NULL, 1);
     enc_size += __int8_t_encoded_array_size(NULL, 1);
-    enc_size += __float_encoded_array_size(NULL, this->num_keyframe);
-    enc_size += this->num_keyframe * this->order_p_1 * __float_encoded_array_size(NULL, 4);
+    enc_size += __double_encoded_array_size(NULL, this->num_keyframe);
+    enc_size += this->num_keyframe * this->order_p_1 * __double_encoded_array_size(NULL, 4);
     return enc_size;
 }
 
 uint64_t uav_traject_t::_computeHash(const __lcm_hash_ptr *)
 {
-    uint64_t hash = 0xed32a129622ab92fLL;
+    uint64_t hash = 0x54c0ef43ff70018aLL;
     return (hash<<1) + ((hash>>63)&1);
 }
 

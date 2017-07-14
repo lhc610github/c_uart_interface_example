@@ -5,6 +5,6 @@ struct uav_traject_t
     int64_t timestamp;
     int8_t num_keyframe;
     int8_t order_p_1;
-    float t[num_keyframe];
-    float traject[num_keyframe][order_p_1][4];
+    double t[num_keyframe];
+    double traject[num_keyframe][order_p_1][4];
 }

@@ -9,8 +9,8 @@
 uint64_t lcm_get_time_usec() {
     static struct timeval _time_stamp2;
     gettimeofday(&_time_stamp2, NULL);
-    uint64_t temp_unix_timestamp = _time_stamp2.tv_sec*1000000;
-    temp_unix_timestamp += _time_stamp2.tv_usec;
+    uint64_t temp_unix_timestamp = (uint64_t)_time_stamp2.tv_sec*1000000;
+    temp_unix_timestamp += (uint64_t)_time_stamp2.tv_usec;
 	return temp_unix_timestamp;
 }
 // --------------------------------------------------------------------------------------------------- 

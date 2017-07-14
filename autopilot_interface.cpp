@@ -63,7 +63,9 @@ get_time_usec()
 {
 	static struct timeval _time_stamp;
 	gettimeofday(&_time_stamp, NULL);
-	return (uint64_t)_time_stamp.tv_sec*1000000 + (uint64_t)_time_stamp.tv_usec;
+    uint64_t temp_unix_timestamp = _time_stamp.tv_sec*1000000;
+    temp_unix_timestamp += _time_stamp.tv_usec;
+	return temp_unix_timestamp;
 }
 
 

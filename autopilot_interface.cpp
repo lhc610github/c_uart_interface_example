@@ -495,7 +495,7 @@ write_ca_traject()
             if (_traject_vaild)
             {
               /* caculate the P_d */
-               for (int i = 1; i < 4 ;i++)
+               for (int i = 0; i < 4 ;i++)
                {
                     //double _temp_array[10];
                     int _order_p_1 = lcm_interface.l_u_t_handler.order_p_1;

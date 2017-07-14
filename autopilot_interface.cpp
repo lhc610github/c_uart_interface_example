@@ -466,14 +466,57 @@ write_ca_traject()
 	// --------------------------------------------------------------------------
 
 	// pull from position target
-	mavlink_ca_traject_t ca_traject;
+	//mavlink_ca_traject_t ca_traject;
 
+    if (lcm_interface.l_u_t_handler.init_flage)
+    {
+        uint64_t _now = get_time_usec();
+        if (_now > lcm_interface.l_u_t_handler.PC_time)
+        {
+            double _delta_t = (double)(_now - lcm_interface.l_u_t_handler.PC_time)/1000000;
+            int _index = 0;
+            bool _traject_vaild = false;
+            for (int i = 1; i < lcm_interface.l_u_t_handler.num_keyframe ; i++)
+            {
+                if( _delta_t < lcm_interface.l_u_t_handler.t[i] )
+                { _index = i-1;
+                 _traject_vaild = true;
+                    break;
+                }
+                _traject_vaild = (i >= lcm_interface.l_u_t_handler.num_keyframe-1)?false:true;
+            }
+            float _P_d[4];
+            float _vel_d[4];
+            float _acc_d[4];
+            if (_traject_vaild)
+            {
+              /* caculate the P_d */
+               for (int i = 1; i < 4 ;i++)
+               {
+                    //double _temp_array[10];
+                    int _order_p_1 = lcm_interface.l_u_t_handler.order_p_1;
+                    double _temp_sum = 0;
+                    for (int j = 0; j < _order_p_1; j++)
+                    {
+                        //_temp_array[_order_p_1 -1 -j] = lcm_interface.l_u_t_handler.traject[_index][j][i];
+                        double _temp_poly_p_t = 1;
+                        for (int k = 0; k < (_order_p_1 - 1 - j) ;k++)
+                        {
+                           _temp_poly_p_t *= _delta_t;
+                        }
+                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index][j][i];
+                    }
+                    _P_d[i] = _temp_sum;
+               }
+               printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
+            }
+        }
         // --------------------------------------------------------------------------
         //   ENCODE
         // --------------------------------------------------------------------------
 
-        mavlink_message_t message;
-        mavlink_msg_ca_traject_encode(system_id, companion_id, &message, &ca_traject);
+        //mavlink_message_t message;
+        //mavlink_msg_ca_traject_encode(system_id, companion_id, &message, &ca_traject);
 
 
         // --------------------------------------------------------------------------
@@ -481,12 +524,13 @@ write_ca_traject()
         // --------------------------------------------------------------------------
 
         // do the write
-        int len = write_message(message);
+        //int len = write_message(message);
 
         // check the write
-        if ( len <= 0 )
-            fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
-        usleep(300);
+        //if ( len <= 0 )
+            //fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
+        //usleep(300);
+    }
 	return;
 }
 
@@ -849,28 +893,29 @@ write_thread(void)
 	writing_status = 2;
 
 	// prepare an initial setpoint, just stay put
-	mavlink_set_position_target_local_ned_t sp;
-	sp.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY &
-				   MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_RATE;
-	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-	sp.vx       = 0.0;
-	sp.vy       = 0.0;
-	sp.vz       = 0.0;
-	sp.yaw_rate = 0.0;
+	//mavlink_set_position_target_local_ned_t sp;
+	//sp.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY &
+				   //MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_RATE;
+	//sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
+	//sp.vx       = 0.0;
+	//sp.vy       = 0.0;
+	//sp.vz       = 0.0;
+	//sp.yaw_rate = 0.0;
 
 	// set position target
-	current_setpoint = sp;
+	//current_setpoint = sp;
 
 	// write a message and signal writing
-	write_setpoint();
+	//write_setpoint();
+    write_ca_traject();
 	writing_status = true;
 
 	// Pixhawk needs to see off-board commands at minimum 2Hz,
 	// otherwise it will go into fail safe
 	while ( !time_to_exit )
 	{
-		usleep(250000);   // Stream at 4Hz
-		write_setpoint();
+	    usleep(100000);   // Stream at 10Hz
+        write_ca_traject();
 	}
 
 	// signal end

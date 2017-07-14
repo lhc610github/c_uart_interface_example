@@ -101,7 +101,7 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
         const std::string& chan,
         const uav_traject::uav_traject_t* msg) {
     printf("Received message on channel \"%s\":\n", chan.c_str());
-    //printf(" timestamp = %lld\n", msg->timestamp);
+    printf(" timestamp = %lld\n", msg->timestamp);
     printf(" num_keyframe = %d\n", msg->num_keyframe);
     printf(" order+1 = %d\n", msg->order_p_1);
     printf(" t = [");

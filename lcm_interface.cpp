@@ -9,7 +9,7 @@
 uint64_t lcm_get_time_usec() {
     static struct timeval _time_stamp2;
     gettimeofday(&_time_stamp2, NULL);
-    return _time_stamp2.tv_sec*1000000 + _time_stamp2.tv_usec;
+    return (uint64_t)_time_stamp2.tv_sec*1000000 + (uint64_t)_time_stamp2.tv_usec;
 }
 // --------------------------------------------------------------------------------------------------- 
 // LCM uav_status topic Handler 

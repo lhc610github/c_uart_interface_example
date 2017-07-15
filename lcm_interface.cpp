@@ -130,8 +130,11 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
     PC_time = msg->timestamp;
     num_keyframe= msg->num_keyframe;
     order_p_1 = msg->order_p_1;
+    t[0] = 0;
     for (int i=0; i< num_keyframe; i++)
-        t[i] = msg->t[i];
+    {
+        t[i+1] = msg->t[i];
+    }
     printf(" get traject.t \n");
     for (int i=0; i< num_keyframe; i++)
     {

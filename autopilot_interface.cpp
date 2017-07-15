@@ -510,7 +510,7 @@ write_ca_traject()
                         }
                         _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index][j][i];
                     }
-                    _P_d[i] = _temp_sum;
+                    _P_d[i] = (float)_temp_sum;
                }
                printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
             }

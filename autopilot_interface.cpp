@@ -926,7 +926,7 @@ write_thread(void)
 	// otherwise it will go into fail safe
 	while ( !time_to_exit )
 	{
-	    usleep(10000);   // Stream at 100Hz
+	    usleep(3000);   // Stream at 100Hz
         write_ca_traject();
 	}
 

@@ -480,14 +480,14 @@ write_ca_traject()
             double _delta_t = (double)(_now - lcm_interface.l_u_t_handler.PC_time)/1000000;
             int _index = 0;
             bool _traject_vaild = false;
-            for (int i = 1; i < lcm_interface.l_u_t_handler.num_keyframe ; i++)
+            for (int i = 1; i < lcm_interface.l_u_t_handler.num_keyframe+1 ; i++)
             {
                 if( _delta_t < lcm_interface.l_u_t_handler.t[i] )
                 { _index = i-1;
                  _traject_vaild = true;
                     break;
                 }
-                _traject_vaild = (i >= lcm_interface.l_u_t_handler.num_keyframe-1)?false:true;
+                _traject_vaild = (i >= lcm_interface.l_u_t_handler.num_keyframe)?false:true;
             }
             float _P_d[4];
             float _vel_d[4];

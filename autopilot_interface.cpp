@@ -473,8 +473,8 @@ write_ca_traject()
     if (lcm_interface.l_u_t_handler.init_flage)
     {
         uint64_t _now = get_time_usec();
-        printf("now time is %lld \n ",_now);
-        printf("PC time is %lld \n ",lcm_interface.l_u_t_handler.PC_time);
+        //printf("now time is %lld \n ",_now);
+        //printf("PC time is %lld \n ",lcm_interface.l_u_t_handler.PC_time);
         if (_now > lcm_interface.l_u_t_handler.PC_time)
         {
             double _delta_t = (double)(_now - lcm_interface.l_u_t_handler.PC_time)/1000000;
@@ -512,28 +512,36 @@ write_ca_traject()
                     }
                     _P_d[i] = (float)_temp_sum;
                }
-               printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
+               //printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
+                mavlink_ca_traject_res_t ca_traject_res;
+                ca_traject_res.PC_time_usec = (uint64_t) lcm_interface.l_u_t_handler.PC_time;
+                ca_traject_res.time_usec = (uint64_t) get_time_usec();
+                for (int i=0 ; i<4 ;i++)
+                {
+                    ca_traject_res.P_d[i] = _P_d[i];
+                    ca_traject_res.vel_d[i] = _vel_d[i];
+                    ca_traject_res.acc_d[i] = _acc_d[i];
+                }
+                // --------------------------------------------------------------------------
+                //   ENCODE
+                // --------------------------------------------------------------------------
+
+                mavlink_message_t message;
+                mavlink_msg_ca_traject_res_encode(system_id, companion_id, &message, &ca_traject_res);
+
+
+                // --------------------------------------------------------------------------
+                //   WRITE
+                // --------------------------------------------------------------------------
+
+                // do the write
+                int len = write_message(message);
+
+                // check the write
+                if ( len <= 0 )
+                    fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
             }
         }
-        // --------------------------------------------------------------------------
-        //   ENCODE
-        // --------------------------------------------------------------------------
-
-        //mavlink_message_t message;
-        //mavlink_msg_ca_traject_encode(system_id, companion_id, &message, &ca_traject);
-
-
-        // --------------------------------------------------------------------------
-        //   WRITE
-        // --------------------------------------------------------------------------
-
-        // do the write
-        //int len = write_message(message);
-
-        // check the write
-        //if ( len <= 0 )
-            //fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
-        //usleep(300);
     }
 	return;
 }
@@ -918,7 +926,7 @@ write_thread(void)
 	// otherwise it will go into fail safe
 	while ( !time_to_exit )
 	{
-	    usleep(100000);   // Stream at 10Hz
+	    usleep(10000);   // Stream at 100Hz
         write_ca_traject();
 	}
 

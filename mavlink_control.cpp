@@ -73,7 +73,7 @@ top (int argc, char **argv)
 #else
 	char *uart_name = (char*)"/dev/ttyUSB0";
 #endif
-	int baudrate = 115200;
+	int baudrate = 921600;//115200;
 
 	// do the parse, will throw an int if it fails
 	parse_commandline(argc, argv, uart_name, baudrate);

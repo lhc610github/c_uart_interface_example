@@ -386,7 +386,7 @@ read_messages()
 
 		// give the write thread time to use the port
 		if ( writing_status > false ) {
-			usleep(100); // look for components of batches at 10kHz
+			usleep(10000); // look for components of batches at 100Hz
 		}
 
 	} // end: while not received all
@@ -926,7 +926,7 @@ write_thread(void)
 	// otherwise it will go into fail safe
 	while ( !time_to_exit )
 	{
-	    usleep(3000);   // Stream at 100Hz
+	    usleep(8000);   // Stream at 100Hz
         write_ca_traject();
 	}
 

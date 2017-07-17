@@ -497,12 +497,10 @@ write_ca_traject()
               /* caculate the P_d */
                for (int i = 0; i < 4 ;i++)
                {
-                    //double _temp_array[10];
                     int _order_p_1 = lcm_interface.l_u_t_handler.order_p_1;
                     double _temp_sum = 0;
                     for (int j = 0; j < _order_p_1; j++)
                     {
-                        //_temp_array[_order_p_1 -1 -j] = lcm_interface.l_u_t_handler.traject[_index][j][i];
                         double _temp_poly_p_t = 1;
                         for (int k = 0; k < (_order_p_1 - 1 - j) ;k++)
                         {
@@ -512,6 +510,42 @@ write_ca_traject()
                     }
                     _P_d[i] = (float)_temp_sum;
                }
+
+              /* caculate the vel_d */
+               for (int i = 0; i < 4 ;i++)
+               {
+                    int _order_p_1 = lcm_interface.l_u_t_handler.order_p_1;
+                    double _temp_sum = 0;
+                    for (int j = 0; j < _order_p_1-1 ; j++)
+                    {
+                        double _temp_poly_p_t = 1;
+                        for (int k = 0; k < (_order_p_1 - 2 - j) ;k++)
+                        {
+                           _temp_poly_p_t *= _delta_t;
+                        }
+                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index][j][i] * (_order_p_1 -1 -j);
+                    }
+                    _vel_d[i] = (float)_temp_sum;
+               }
+
+              /* caculate the acc_d */
+               for (int i = 0; i < 4 ;i++)
+               {
+                    int _order_p_1 = lcm_interface.l_u_t_handler.order_p_1;
+                    double _temp_sum = 0;
+                    for (int j = 0; j < _order_p_1-2 ; j++)
+                    {
+                        double _temp_poly_p_t = 1;
+                        for (int k = 0; k < (_order_p_1 - 3 - j) ;k++)
+                        {
+                           _temp_poly_p_t *= _delta_t;
+                        }
+                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index][j][i] * (_order_p_1 -1 -j) * (_order_p_1 -2 -j);
+                    }
+                    _acc_d[i] = (float)_temp_sum;
+               }
+
+              /* send the message */
                //printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
                 mavlink_ca_traject_res_t ca_traject_res;
                 ca_traject_res.PC_time_usec = (uint64_t) lcm_interface.l_u_t_handler.PC_time;

@@ -470,6 +470,7 @@ write_ca_traject()
 	// pull from position target
 	//mavlink_ca_traject_t ca_traject;
 
+	pthread_mutex_lock(&lcm_interface.l_u_t_handler.traject_pthread_lock);
     if (lcm_interface.l_u_t_handler.init_flage)
     {
         uint64_t _now = get_time_usec();
@@ -577,6 +578,7 @@ write_ca_traject()
             }
         }
     }
+	pthread_mutex_unlock(&lcm_interface.l_u_t_handler.traject_pthread_lock);
 	return;
 }
 

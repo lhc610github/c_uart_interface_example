@@ -16,9 +16,19 @@ uint64_t lcm_get_time_usec() {
 // --------------------------------------------------------------------------------------------------- 
 // LCM uav_status topic Handler 
 // ---------------------------------------------------------------------------------------------------
- Lcm_u_s_Sub_Handler:: Lcm_u_s_Sub_Handler() { reset_mem();
+ Lcm_u_s_Sub_Handler:: Lcm_u_s_Sub_Handler() { 
+    reset_mem();
+	int result = pthread_mutex_init(&status_pthread_lock, NULL);
+	if ( result != 0 )
+	{
+		printf("\n status  mutex init failed\n");
+		throw 1;
+	}
 }
-Lcm_u_s_Sub_Handler:: ~Lcm_u_s_Sub_Handler() {}
+Lcm_u_s_Sub_Handler:: ~Lcm_u_s_Sub_Handler() {
+	// destroy mutex
+	pthread_mutex_destroy(&status_pthread_lock);
+}
 
 void Lcm_u_s_Sub_Handler:: reset_mem() {
 
@@ -44,6 +54,7 @@ void Lcm_u_s_Sub_Handler:: lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
             //msg->orientation[2],msg->orientation[3]);
     //printf(" mode = %d\n",msg->mode);
     //printf(" send_count = %lld\n",msg->send_count);
+	pthread_mutex_lock(&status_pthread_lock);
     oth_uav_status.timestamp = msg->timestamp;
     memcpy(oth_uav_status.position,msg->position,sizeof(msg->position));
     memcpy(oth_uav_status.orientation,msg->orientation,sizeof(msg->orientation));
@@ -63,6 +74,7 @@ void Lcm_u_s_Sub_Handler:: lcm_subscrib_function(const lcm::ReceiveBuffer* rbuf,
     last_receive_time = receive_time;
     last_send_time = oth_uav_status.timestamp;
     last_send_count = msg->send_count;
+	pthread_mutex_unlock(&status_pthread_lock);
 }
 
 float Lcm_u_s_Sub_Handler:: get_send_rate() {
@@ -88,9 +100,19 @@ bool Lcm_u_s_Sub_Handler:: check_timeout() {
 // --------------------------------------------------------------------------------------------------- 
 // LCM 'uav_traject' topic Handler 
 // ---------------------------------------------------------------------------------------------------
-Lcm_u_t_Sub_Handler:: Lcm_u_t_Sub_Handler() { reset_mem();
+Lcm_u_t_Sub_Handler:: Lcm_u_t_Sub_Handler() { 
+    reset_mem();
+	int result = pthread_mutex_init(&traject_pthread_lock, NULL);
+	if ( result != 0 )
+	{
+		printf("\n traject  mutex init failed\n");
+		throw 1;
+	}
 }
-Lcm_u_t_Sub_Handler:: ~Lcm_u_t_Sub_Handler() {}
+Lcm_u_t_Sub_Handler:: ~Lcm_u_t_Sub_Handler() {
+	// destroy mutex
+	pthread_mutex_destroy(&traject_pthread_lock);
+}
 
 void Lcm_u_t_Sub_Handler:: reset_mem() {
 
@@ -102,6 +124,7 @@ void Lcm_u_t_Sub_Handler:: reset_mem() {
 void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf,
         const std::string& chan,
         const uav_traject::uav_traject_t* msg) {
+	pthread_mutex_lock(&traject_pthread_lock);
     printf("Received message on channel \"%s\":\n", chan.c_str());
     printf(" timestamp = %lld\n", msg->timestamp);
     printf(" num_keyframe = %d\n", msg->num_keyframe);
@@ -147,6 +170,7 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
         }
     }
     printf(" get traject.traject \n");
+	pthread_mutex_unlock(&traject_pthread_lock);
 }
 // --------------------------------------------------------------------------------------------------- 
 // Lcm Interface Class 

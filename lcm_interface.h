@@ -48,6 +48,7 @@ public:
     float get_receive_rate();
 
     bool check_timeout();
+    pthread_mutex_t status_pthread_lock;
 };
 
 class Lcm_u_t_Sub_Handler
@@ -68,6 +69,7 @@ public:
     double t[11];
     double traject[10][10][4]; // num_keyframe|order_p_1|4
     bool has_received;
+    pthread_mutex_t traject_pthread_lock;
     //uint64_t last_receive_time; //us
     //uint64_t last_send_time; //us
     //uint64_t last_send_count; //us

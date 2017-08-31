@@ -476,19 +476,28 @@ write_ca_traject()
         uint64_t _now = get_time_usec();
         //printf("now time is %lld \n ",_now);
         //printf("PC time is %lld \n ",lcm_interface.l_u_t_handler.PC_time);
-        if (_now > lcm_interface.l_u_t_handler.PC_time)
+        if (_now > lcm_interface.l_u_t_handler.PC_time - 5000000)
         {
             double _delta_t = (double)(_now - lcm_interface.l_u_t_handler.PC_time)/1000000;
             int _index = 0;
             bool _traject_vaild = false;
-            for (int i = 1; i < lcm_interface.l_u_t_handler.num_keyframe+1 ; i++)
+            if (_delta_t < 0)
             {
-                if( _delta_t < lcm_interface.l_u_t_handler.t[i] )
-                { _index = i-1;
-                 _traject_vaild = true;
-                    break;
+                _delta_t = 0;
+                _traject_vaild = true;
+                _index = 0;
+            }
+            else 
+            {
+                for (int i = 1; i < lcm_interface.l_u_t_handler.num_keyframe+1 ; i++)
+                {
+                    if( _delta_t < lcm_interface.l_u_t_handler.t[i] )
+                    { _index = i-1;
+                     _traject_vaild = true;
+                        break;
+                    }
+                    _traject_vaild = (i >= lcm_interface.l_u_t_handler.num_keyframe)?false:true;
                 }
-                _traject_vaild = (i >= lcm_interface.l_u_t_handler.num_keyframe)?false:true;
             }
             float _P_d[4];
             float _vel_d[4];
@@ -547,7 +556,9 @@ write_ca_traject()
                }
 
               /* send the message */
-               //printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
+               printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
+               printf("v_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_vel_d[0],_vel_d[1],_vel_d[2],_vel_d[3]);
+               printf("a_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_acc_d[0],_acc_d[1],_acc_d[2],_acc_d[3]);
                 mavlink_ca_traject_res_t ca_traject_res;
                 ca_traject_res.PC_time_usec = (uint64_t) lcm_interface.l_u_t_handler.PC_time;
                 ca_traject_res.time_usec = (uint64_t) get_time_usec();

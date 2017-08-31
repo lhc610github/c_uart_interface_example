@@ -478,10 +478,10 @@ write_ca_traject()
         //printf("PC time is %lld \n ",lcm_interface.l_u_t_handler.PC_time);
         if (_now > lcm_interface.l_u_t_handler.PC_time - 5000000)
         {
-            double _delta_t = (double)(_now - lcm_interface.l_u_t_handler.PC_time)/1000000;
             int _index = 0;
             bool _traject_vaild = false;
-            if (_delta_t < 0)
+            double _delta_t = 0;
+            if (_now <  lcm_interface.l_u_t_handler.PC_time)
             {
                 _delta_t = 0;
                 _traject_vaild = true;
@@ -489,6 +489,7 @@ write_ca_traject()
             }
             else 
             {
+                _delta_t = (double)(_now - lcm_interface.l_u_t_handler.PC_time)/1000000;
                 for (int i = 1; i < lcm_interface.l_u_t_handler.num_keyframe+1 ; i++)
                 {
                     if( _delta_t < lcm_interface.l_u_t_handler.t[i] )

@@ -557,9 +557,9 @@ write_ca_traject()
                }
 
               /* send the message */
-               printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
-               printf("v_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_vel_d[0],_vel_d[1],_vel_d[2],_vel_d[3]);
-               printf("a_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_acc_d[0],_acc_d[1],_acc_d[2],_acc_d[3]);
+               //printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);
+               //printf("v_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_vel_d[0],_vel_d[1],_vel_d[2],_vel_d[3]);
+               //printf("a_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_acc_d[0],_acc_d[1],_acc_d[2],_acc_d[3]);
                 mavlink_ca_traject_res_t ca_traject_res;
                 ca_traject_res.PC_time_usec = (uint64_t) lcm_interface.l_u_t_handler.PC_time;
                 ca_traject_res.time_usec = (uint64_t) get_time_usec();

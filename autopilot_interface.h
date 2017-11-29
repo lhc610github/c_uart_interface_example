@@ -63,6 +63,7 @@
 
 #include <common/mavlink.h>
 #include "lcm_interface.h"
+#include "avoid_potential_interface.h"
 
 // ------------------------------------------------------------------------------
 //   Defines
@@ -118,14 +119,10 @@
 
 // helper functions
 uint64_t get_time_usec();
-void set_position(float x, float y, float z, mavlink_set_position_target_local_ned_t &sp);
-void set_velocity(float vx, float vy, float vz, mavlink_set_position_target_local_ned_t &sp);
-void set_acceleration(float ax, float ay, float az, mavlink_set_position_target_local_ned_t &sp);
-void set_yaw(float yaw, mavlink_set_position_target_local_ned_t &sp);
-void set_yaw_rate(float yaw_rate, mavlink_set_position_target_local_ned_t &sp);
 
 void* start_autopilot_interface_read_thread(void *args);
 void* start_autopilot_interface_write_thread(void *args);
+void* start_avoid_potential_thread(void *args);
 
 
 // ------------------------------------------------------------------------------
@@ -251,6 +248,8 @@ public:
 	char control_status;
     uint64_t write_count;
 
+    char ap_status;
+
     int system_id;
 	int autopilot_id;
 	int companion_id;
@@ -272,11 +271,17 @@ public:
 
 	void start_read_thread();
 	void start_write_thread(void);
+	void start_ap_thread();
 
 	void handle_quit( int sig );
+
+	void update_Ap_status();
+
+	Ap_vehicle_s get_Aps_from_lcm( int number );
 	
 	Lcm_Interface lcm_interface;
 
+    Avoid_Potential_Interface AP_interface;
 
 private:
 
@@ -286,11 +291,13 @@ private:
 
 	pthread_t read_tid;
 	pthread_t write_tid;
+	pthread_t ap_tid;
 
 	mavlink_set_position_target_local_ned_t current_setpoint;
 
 	void read_thread();
 	void write_thread(void);
+	void ap_thread(void);
 
 	int toggle_offboard_control( bool flag );
 	void write_setpoint();
@@ -300,5 +307,3 @@ private:
 
 
 #endif // AUTOPILOT_INTERFACE_H_
-
-

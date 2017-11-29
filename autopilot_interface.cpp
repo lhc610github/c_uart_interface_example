@@ -69,116 +69,7 @@ get_time_usec()
 }
 
 
-// ----------------------------------------------------------------------------------
-//   Setpoint Helper Functions
-// ----------------------------------------------------------------------------------
 
-// choose one of the next three
-
-/*
- * Set target local ned position
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with target XYZ locations
- * in the Local NED frame, in meters.
- */
-void
-set_position(float x, float y, float z, mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask =
-		MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_POSITION;
-
-	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-
-	sp.x   = x;
-	sp.y   = y;
-	sp.z   = z;
-
-	printf("POSITION SETPOINT XYZ = [ %.4f , %.4f , %.4f ] \n", sp.x, sp.y, sp.z);
-
-}
-
-/*
- * Set target local ned velocity
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with target VX VY VZ
- * velocities in the Local NED frame, in meters per second.
- */
-void
-set_velocity(float vx, float vy, float vz, mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask =
-		MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY     ;
-
-	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-
-	sp.vx  = vx;
-	sp.vy  = vy;
-	sp.vz  = vz;
-
-	//printf("VELOCITY SETPOINT UVW = [ %.4f , %.4f , %.4f ] \n", sp.vx, sp.vy, sp.vz);
-
-}
-
-/*
- * Set target local ned acceleration
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with target AX AY AZ
- * accelerations in the Local NED frame, in meters per second squared.
- */
-void
-set_acceleration(float ax, float ay, float az, mavlink_set_position_target_local_ned_t &sp)
-{
-
-	// NOT IMPLEMENTED
-	fprintf(stderr,"set_acceleration doesn't work yet \n");
-	throw 1;
-
-
-	sp.type_mask =
-		MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_ACCELERATION &
-		MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY     ;
-
-	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-
-	sp.afx  = ax;
-	sp.afy  = ay;
-	sp.afz  = az;
-}
-
-// the next two need to be called after one of the above
-
-/*
- * Set target local ned yaw
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw
- * in the Local NED frame, in radians.
- */
-void
-set_yaw(float yaw, mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask &=
-		MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_ANGLE ;
-
-	sp.yaw  = yaw;
-
-	printf("POSITION SETPOINT YAW = %.4f \n", sp.yaw);
-
-}
-
-/*
- * Set target local ned yaw rate
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw rate
- * in the Local NED frame, in radians per second.
- */
-void
-set_yaw_rate(float yaw_rate, mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask &=
-		MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_RATE ;
-
-	sp.yaw_rate  = yaw_rate;
-}
 
 
 // ----------------------------------------------------------------------------------
@@ -197,6 +88,9 @@ Autopilot_Interface(Serial_Port *serial_port_)
 	reading_status = 0;      // whether the read thread is running
 	writing_status = 0;      // whether the write thread is running
 	control_status = 0;      // whether the autopilot is in offboard control mode
+
+	ap_status = 0;           // whether the avoid potential function is runing
+
 	time_to_exit   = false;  // flag to signal thread exit
 
 	read_tid  = 0; // read thread id
@@ -306,6 +200,9 @@ read_messages()
 					current_messages.time_stamps.local_position_ned = get_time_usec();
 					this_timestamps.local_position_ned = current_messages.time_stamps.local_position_ned;
 					lcm_interface.receive_uav_pos(current_messages.local_position_ned.x,
+					current_messages.local_position_ned.y,
+					current_messages.local_position_ned.z);
+					AP_interface.set_self_pos(current_messages.local_position_ned.x,
 					current_messages.local_position_ned.y,
 					current_messages.local_position_ned.z);
 					break;
@@ -819,6 +716,16 @@ start()
 	while ( not writing_status )
 		usleep(100000); // 10Hz
 
+	// --------------------------------------------------------------------------
+	//   AP FUNCTION THREAD
+	// --------------------------------------------------------------------------
+	result = pthread_create( &ap_tid, NULL, &start_avoid_potential_thread , this );
+	if ( result ) throw result;
+
+	while ( not ap_status )
+		usleep(100000);
+
+
 	// now we're streaming setpoint commands
 	printf("\n");
 
@@ -900,6 +807,23 @@ start_write_thread(void)
 
 
 // ------------------------------------------------------------------------------
+//   Avoid Potential Function Thread
+// ------------------------------------------------------------------------------
+void
+Autopilot_Interface::
+start_ap_thread()
+{
+	if ( not writing_status == false ) {
+		fprintf(stderr, "avoid potential thread already running\n");
+		return;
+	} else {
+		ap_thread();
+		return;
+	}
+}
+
+
+// ------------------------------------------------------------------------------
 //   Quit Handler
 // ------------------------------------------------------------------------------
 void
@@ -919,7 +843,43 @@ handle_quit( int sig )
 
 }
 
+void
+Autopilot_Interface::
+update_Ap_status()
+{
+	for (int i = 0; i < MAX_NUM_VEHICLE ; i++) {
+		AP_interface.get_vehicle_status(i+1, get_Aps_from_lcm(i+1));
+	}
+}
 
+
+Ap_vehicle_s
+Autopilot_Interface::
+get_Aps_from_lcm( int number)
+{
+	Ap_vehicle_s res;
+	if ( number <= lcm_interface.max_num_quad ) {
+		pthread_mutex_lock(&lcm_interface.l_s_handler[number-1].status_pthread_lock);
+		if (!lcm_interface.l_s_handler[number-1].check_timeout() 
+			&& lcm_interface.l_s_handler[number-1].init_flage) {
+			res.vehicle_valid = true;
+			res.last_get_timestamp = lcm_interface.l_s_handler[number-1].last_receive_time;
+			for ( int i = 0; i < 3 ; i++) {
+				res.pos[i] = lcm_interface.l_s_handler[number-1].oth_uav_status.position[i];
+			}
+			for ( int i = 0; i < 4 ; i++) {
+				res.q[i] = lcm_interface.l_s_handler[number-1].oth_uav_status.orientation[i];
+			}
+		} else {
+			res.reset_Ap_vehicle();
+		}
+		pthread_mutex_unlock(&lcm_interface.l_s_handler[number-1].status_pthread_lock);
+	} else {
+		printf("over max num \n");
+		res.reset_Ap_vehicle();
+	}
+	return res;
+}
 
 // ------------------------------------------------------------------------------
 //   Read Thread
@@ -985,6 +945,40 @@ write_thread(void)
 
 }
 
+// ------------------------------------------------------------------------------
+//   Write Thread
+// ------------------------------------------------------------------------------
+void
+Autopilot_Interface::
+ap_thread(void)
+{
+	// signal startup
+	ap_status = 2;
+
+
+    // update the ap status
+    float local_pos[3];
+    update_Ap_status();
+    // run ap funciton
+    AP_interface.Avoid_Potential_run();
+	ap_status = true;
+	// run it period
+	while ( !time_to_exit )
+	{
+	    // update the ap status
+	    update_Ap_status();
+	    // run ap funciton
+	    AP_interface.Avoid_Potential_run();
+	    usleep(80000);   // Stream at 10Hz
+	}
+
+	// signal end
+	ap_status = false;
+
+	return;
+
+}
+
 // End Autopilot_Interface
 
 
@@ -1018,5 +1012,18 @@ start_autopilot_interface_write_thread(void *args)
 	return NULL;
 }
 
+
+void*
+start_avoid_potential_thread(void *args)
+{
+	// takes an autopilot object argument
+	Autopilot_Interface *autopilot_interface = (Autopilot_Interface *)args;
+
+	// run the object's read thread
+	autopilot_interface->start_ap_thread();
+
+	// done!
+	return NULL;
+}
 
 

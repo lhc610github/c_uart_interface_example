@@ -22,6 +22,10 @@ Avoid_Potential_Interface()
 {
 	// memset(around_vehicle, 0, (sizeof(Ap_vehicle_s)*MAX_NUM_VEHICLE));
 	update_rate = 0;
+	c_param_pa = CONFLICT_PARAM_PA;
+	c_param_Ra = CONFLICT_PARAM_RA;
+	c_param_nj = CONFLICT_PARAM_NJ;
+	c_param_ea = CONFLICT_PARAM_EA;
 }
 
 Avoid_Potential_Interface::
@@ -121,12 +125,16 @@ Avoid_Potential_function(float other_pos[DIMENSION], float self_pos[DIMENSION])
 	for (int dim_i = 0; dim_i < DIMENSION; dim_i++) {
 		delta_pos[dim_i] = other_pos[dim_i] - self_pos[dim_i];
 	}
-
-	if (do_norm(delta_pos) < PERCEIVED_RADIUS) {
+	float dij = do_norm(delta_pos);
+	if ( dij < PERCEIVED_RADIUS ) {
 		// TODO: add AP function
+		float temp = (c_param_pa - dij)/(c_param_pa = c_param_Ra);
+		float aij = - (pow(c_param_ea, temp) * exp(c_param_ea) / (c_param_pa - c_param_Ra));
+		
 		for (int dim_i = 0; dim_i < DIMENSION; dim_i++) {
-			res.ctrl_output[dim_i] = delta_pos[dim_i];
+			res.ctrl_output[dim_i] = c_param_nj * aij * delta_pos[dim_i] / dij;
 		}
+
 		res.valid = true;
 		return res;
 	} 

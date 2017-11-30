@@ -20,6 +20,10 @@ using namespace std;
 #define MAX_NUM_VEHICLE 4
 #define PERCEIVED_RADIUS 1.2
 #define DIMENSION 3
+#define CONFLICT_PARAM_PA 0.3
+#define CONFLICT_PARAM_RA 0.6
+#define CONFLICT_PARAM_NJ 1.0
+#define CONFLICT_PARAM_EA 0.25
 
 uint64_t ap_get_time_usec();
 
@@ -120,6 +124,12 @@ private:
 	Ap_ctrl_out_s last_ctrl_output;
 	Ap_vehicle_s around_vehicle[MAX_NUM_VEHICLE];
 	Ap_ctrl_func_s Avoid_Potential_function(float other_pos[DIMENSION], float self_pos[DIMENSION]);
+
+	float c_param_pa;
+	float c_param_Ra;
+	float c_param_nj;
+	float c_param_ea;
+
 };
 
 #endif

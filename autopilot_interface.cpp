@@ -813,7 +813,7 @@ void
 Autopilot_Interface::
 start_ap_thread()
 {
-	if ( not writing_status == false ) {
+	if ( not ap_status == false ) {
 		fprintf(stderr, "avoid potential thread already running\n");
 		return;
 	} else {

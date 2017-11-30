@@ -48,7 +48,7 @@ check_vehicle_status_timeout( int num_vehicle)
 			&& (now - around_vehicle[num_vehicle-1].last_get_timestamp) < AVOID_POTENTIAL_TIMEOUT) {
 			return false;
 		} else {
-			printf("around_vehicle[%d] status timeout or not valid\n",num_vehicle);
+			//printf("around_vehicle[%d] status timeout or not valid\n",num_vehicle);
 			return true;
 		}
 	} else if(num_vehicle == 0) {

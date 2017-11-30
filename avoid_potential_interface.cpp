@@ -128,7 +128,7 @@ Avoid_Potential_function(float other_pos[DIMENSION], float self_pos[DIMENSION])
 	float dij = do_norm(delta_pos);
 	if ( dij < PERCEIVED_RADIUS ) {
 		// TODO: add AP function
-		float temp = (c_param_pa - dij)/(c_param_pa = c_param_Ra);
+		float temp = (c_param_pa - dij)/(c_param_pa - c_param_Ra);
 		float aij = - (pow(c_param_ea, temp) * exp(c_param_ea) / (c_param_pa - c_param_Ra));
 		
 		for (int dim_i = 0; dim_i < DIMENSION; dim_i++) {

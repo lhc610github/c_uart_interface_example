@@ -103,7 +103,7 @@ private:
 	// int max_num_vehicle = MAX_NUM_VEHICLE;
 	
 	float do_norm(float temp_vector[DIMENSION]) {
-		float temp = 0;
+		float temp = 0.001;
 		for (int i = 0; i < DIMENSION; i++) {
 			temp = temp + temp_vector[i]*temp_vector[i];
 		}

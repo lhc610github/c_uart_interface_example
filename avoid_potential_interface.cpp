@@ -21,6 +21,7 @@ Avoid_Potential_Interface::
 Avoid_Potential_Interface()
 {
 	// memset(around_vehicle, 0, (sizeof(Ap_vehicle_s)*MAX_NUM_VEHICLE));
+	update_rate = 0;
 }
 
 Avoid_Potential_Interface::
@@ -42,7 +43,7 @@ Avoid_Potential_Interface::
 check_vehicle_status_timeout( int num_vehicle)
 {
 	if (num_vehicle <= MAX_NUM_VEHICLE && num_vehicle > 0) {
-		around_vehicle[num_vehicle-1].vehicle_valid = true;
+		// around_vehicle[num_vehicle-1].vehicle_valid = true;
 		uint64_t now = ap_get_time_usec();
 		if (around_vehicle[num_vehicle-1].vehicle_valid 
 			&& (now - around_vehicle[num_vehicle-1].last_get_timestamp) < AVOID_POTENTIAL_TIMEOUT) {
@@ -91,6 +92,7 @@ Avoid_Potential_run()
 	if (ctl_valid_flag) {
 		res.valid = true;
 		res.timestamp = ap_get_time_usec();
+		update_rate = 1000000/(res.timestamp - last_ctrl_output.timestamp);
 		last_ctrl_output = res;
 		return res;
 	}
@@ -150,6 +152,8 @@ info()
 			printf("  uav[%d] is not validable\n",i+1);
 	}
 
-	if (last_ctrl_output.valid)
+	if (last_ctrl_output.valid) {
 		printf("  ctrl output: [ %2.3f, %2.3f, %2.3f]\n", last_ctrl_output.vel_ctrl_output[0], last_ctrl_output.vel_ctrl_output[1], last_ctrl_output.vel_ctrl_output[2]);
+		printf("  update rate: %2.3f \n",update_rate);
+	}
 }

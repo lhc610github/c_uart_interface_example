@@ -114,6 +114,7 @@ private:
 		}
 		return res;
 	};
+	float update_rate;
 	float self_pos[DIMENSION];
 	uint64_t self_pos_timestamp;
 	Ap_ctrl_out_s last_ctrl_output;

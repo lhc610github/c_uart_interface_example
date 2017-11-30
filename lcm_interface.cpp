@@ -181,8 +181,8 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
 // --------------------------------------------------------------------------------------------------- 
 Lcm_Interface:: Lcm_Interface() {
     // initialize
-    //std::string lcm_url = "udpm://239.255.76.67:7667?ttl=1";
-    //lcm = lcm::LCM::LCM(lcm_url);
+    // std::string lcm_url = "udpm://239.255.76.67:7667?ttl=1";
+    // lcm.LCM("udpm://239.255.76.67:7667?ttl=1");
     send_count = 0;
     pos_receive_time = 0;
     att_receive_time = 0;

@@ -94,6 +94,7 @@ public:
 	void get_vehicle_status(int num_vehicle, Ap_vehicle_s vehicle_status);
 	Ap_ctrl_out_s Avoid_Potential_run();
 	void set_self_pos(float x, float y, float z);
+	void info();
 private:
 	// int max_num_vehicle = MAX_NUM_VEHICLE;
 	
@@ -115,6 +116,7 @@ private:
 	};
 	float self_pos[DIMENSION];
 	uint64_t self_pos_timestamp;
+	Ap_ctrl_out_s last_ctrl_output;
 	Ap_vehicle_s around_vehicle[MAX_NUM_VEHICLE];
 	Ap_ctrl_func_s Avoid_Potential_function(float other_pos[DIMENSION], float self_pos[DIMENSION]);
 };

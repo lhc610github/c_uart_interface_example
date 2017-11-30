@@ -268,6 +268,8 @@ commands(Autopilot_Interface &api)
         }
     }
    
+    api.AP_interface.info();
+
 	// hires imu
 	//mavlink_highres_imu_t imu = messages.highres_imu;
 	//printf("Got message HIGHRES_IMU (spec: https://pixhawk.ethz.ch/mavlink/#HIGHRES_IMU)\n");

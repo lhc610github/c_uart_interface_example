@@ -91,10 +91,12 @@ Avoid_Potential_run()
 	if (ctl_valid_flag) {
 		res.valid = true;
 		res.timestamp = ap_get_time_usec();
+		last_ctrl_output = res;
 		return res;
 	}
 
-	res.valid = false;
+	res.reset_Ap_ctrl_out();
+	last_ctrl_output = res;
 	return res;
 }
 
@@ -130,3 +132,24 @@ Avoid_Potential_function(float other_pos[DIMENSION], float self_pos[DIMENSION])
 	return res;
 }
 
+void
+Avoid_Potential_Interface::
+info()
+{
+	printf("* Avoid Potential function info: \n");
+
+	if (!check_vehicle_status_timeout(0))
+		printf("  self pos: [ %2.3f, %2.3f, %2.3f]\n", self_pos[0], self_pos[1], self_pos[2]);
+	else
+		printf("  self pos is not validable\n");
+
+	for (int i = 0; i < MAX_NUM_VEHICLE; i++) {
+		if (!check_vehicle_status_timeout(i+1))
+			printf("  uav[%d]: [ %2.3f, %2.3f, %2.3f]\n",i+1,around_vehicle[i].pos[0], around_vehicle[i].pos[1], around_vehicle[i].pos[2]);
+		else
+			printf("  uav[%d] is not validable\n",i+1);
+	}
+
+	if (last_ctrl_output.valid)
+		printf("  ctrl output: [ %2.3f, %2.3f, %2.3f]\n", last_ctrl_output.vel_ctrl_output[0], last_ctrl_output.vel_ctrl_output[1], last_ctrl_output.vel_ctrl_output[2]);
+}

@@ -1025,5 +1025,3 @@ start_avoid_potential_thread(void *args)
 	// done!
 	return NULL;
 }
-
-

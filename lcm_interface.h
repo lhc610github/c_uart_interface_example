@@ -119,7 +119,7 @@ public:
     void status_subscrib_thread();
     void traject_subscrib_thread();
 	float att_q_from_euler[4];// quaternion att from euler
-	lcm::LCM lcm;//("udpm://239.255.76.67:7667?ttl=1");
+	lcm::LCM lcm;
 
 private:
 	

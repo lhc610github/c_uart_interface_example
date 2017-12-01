@@ -179,7 +179,7 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
 // --------------------------------------------------------------------------------------------------- 
 // Con/De structors 
 // --------------------------------------------------------------------------------------------------- 
-Lcm_Interface:: Lcm_Interface() {
+Lcm_Interface:: Lcm_Interface() : lcm{"udpm://239.255.76.67:7667?ttl=1"} {
     // initialize
     // std::string lcm_url = "udpm://239.255.76.67:7667?ttl=1";
     // lcm.LCM("udpm://239.255.76.67:7667?ttl=1");

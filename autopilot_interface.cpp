@@ -514,7 +514,7 @@ write_ap_res(Ap_ctrl_out_s Ap_ctrl_out)
     int len = write_message(message);
     // check the write
     if ( len <= 0 )
-        fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
+        fprintf(stderr,"WARNING: could not send AP_RES \n");
     pthread_mutex_unlock(&write_msg_pthread_lock);
 }
 

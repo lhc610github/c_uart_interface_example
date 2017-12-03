@@ -265,6 +265,7 @@ public:
 	void disable_offboard_control();
     
     void write_ca_traject();
+    void write_ap_res(Ap_ctrl_out_s Ap_ctrl_out);
 
 	void start();
 	void stop();
@@ -301,6 +302,7 @@ private:
 
 	int toggle_offboard_control( bool flag );
 	void write_setpoint();
+	pthread_mutex_t write_msg_pthread_lock;
 
 };
 

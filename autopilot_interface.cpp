@@ -993,6 +993,7 @@ ap_thread(void)
 	    // update the ap status
 	    update_Ap_status();
 	    // run ap funciton
+	    // AP_interface.Avoid_Potential_run();
 	    write_ap_res(AP_interface.Avoid_Potential_run());
 	    usleep(80000);   // Stream at 10Hz
 	}

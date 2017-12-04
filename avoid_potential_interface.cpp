@@ -84,11 +84,11 @@ Avoid_Potential_run()
 	bool ctl_valid_flag = false;
 	for (int i = 1; i <= MAX_NUM_VEHICLE; i++) {
 		if (!check_vehicle_status_timeout(i) && !check_vehicle_status_timeout(0)) {
-			ctl_valid_flag = true;
 			Ap_ctrl_func_s temp_out;
 			temp_out = Avoid_Potential_function(around_vehicle[i-1].pos, self_pos);		
 			if (temp_out.valid) {
 				res = do_add_ctrl_res(res, temp_out);
+				ctl_valid_flag = true;
 			}
 		}
 	}

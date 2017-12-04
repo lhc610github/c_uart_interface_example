@@ -459,23 +459,26 @@ void
 Autopilot_Interface::
 write_ap_res(Ap_ctrl_out_s Ap_ctrl_out)
 {
-	mavlink_ap_uavs_func_res_t ap_func_res;
-	ap_func_res.time_usec = (uint64_t) get_time_usec();
-	ap_func_res.ap_ctrl_vel[0] = Ap_ctrl_out.vel_ctrl_output[0];
-	ap_func_res.ap_ctrl_vel[1] = Ap_ctrl_out.vel_ctrl_output[1];
-	ap_func_res.ap_ctrl_vel[2] = Ap_ctrl_out.vel_ctrl_output[2];
-	mavlink_message_t message;
-	mavlink_msg_ap_uavs_func_res_encode(system_id, companion_id, &message, &ap_func_res);
-    // --------------------------------------------------------------------------
-    //   WRITE
-    // --------------------------------------------------------------------------
-    pthread_mutex_lock(&write_msg_pthread_lock);
-    // do the write
-    int len = write_message(message);
-    // check the write
-    if ( len <= 0 )
-        fprintf(stderr,"WARNING: could not send AP_RES \n");
-    pthread_mutex_unlock(&write_msg_pthread_lock);
+	if (Ap_ctrl_out.valid)
+	{
+		mavlink_ap_uavs_func_res_t ap_func_res;
+		ap_func_res.time_usec = (uint64_t) get_time_usec();
+		ap_func_res.ap_ctrl_vel[0] = Ap_ctrl_out.vel_ctrl_output[0];
+		ap_func_res.ap_ctrl_vel[1] = Ap_ctrl_out.vel_ctrl_output[1];
+		ap_func_res.ap_ctrl_vel[2] = Ap_ctrl_out.vel_ctrl_output[2];
+		mavlink_message_t message;
+		mavlink_msg_ap_uavs_func_res_encode(system_id, companion_id, &message, &ap_func_res);
+	    // --------------------------------------------------------------------------
+	    //   WRITE
+	    // --------------------------------------------------------------------------
+	    pthread_mutex_lock(&write_msg_pthread_lock);
+	    // do the write
+	    int len = write_message(message);
+	    // check the write
+	    if ( len <= 0 )
+	        fprintf(stderr,"WARNING: could not send AP_RES \n");
+	    pthread_mutex_unlock(&write_msg_pthread_lock);
+	}
 }
 
 // ------------------------------------------------------------------------------

@@ -311,47 +311,7 @@ write_message(mavlink_message_t message)
 // ------------------------------------------------------------------------------
 //   Write Setpoint Message
 // ------------------------------------------------------------------------------
-void
-Autopilot_Interface::
-write_setpoint()
-{
-	// --------------------------------------------------------------------------
-	//   PACK PAYLOAD
-	// --------------------------------------------------------------------------
 
-	// pull from position target
-	mavlink_set_position_target_local_ned_t sp = current_setpoint;
-
-	// double check some system parameters
-	if ( not sp.time_boot_ms )
-		sp.time_boot_ms = (uint32_t) (get_time_usec()/1000);
-	sp.target_system    = system_id;
-	sp.target_component = autopilot_id;
-
-
-	// --------------------------------------------------------------------------
-	//   ENCODE
-	// --------------------------------------------------------------------------
-
-	mavlink_message_t message;
-	mavlink_msg_set_position_target_local_ned_encode(system_id, companion_id, &message, &sp);
-
-
-	// --------------------------------------------------------------------------
-	//   WRITE
-	// --------------------------------------------------------------------------
-
-	// do the write
-	int len = write_message(message);
-
-	// check the write
-	if ( len <= 0 )
-		fprintf(stderr,"WARNING: could not send POSITION_TARGET_LOCAL_NED \n");
-	//	else
-	//		printf("%lu POSITION_TARGET  = [ %f , %f , %f ] \n", write_count, position_target.x, position_target.y, position_target.z);
-
-	return;
-}
 
 // ------------------------------------------------------------------------------
 //   Write Setpoint Message

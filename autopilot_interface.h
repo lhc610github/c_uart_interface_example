@@ -301,7 +301,7 @@ private:
 	void ap_thread(void);
 
 	int toggle_offboard_control( bool flag );
-	void write_setpoint();
+	// void write_setpoint();
 	pthread_mutex_t write_msg_pthread_lock;
 
 };

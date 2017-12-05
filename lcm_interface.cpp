@@ -334,7 +334,7 @@ void Lcm_Interface:: send_thread() {
     while( ! time_to_exit )
     {
         send_lcm_messages();
-        usleep(40000); // Send at 10Hz
+        usleep(48000); // Send at 10Hz
     }
 
     return;

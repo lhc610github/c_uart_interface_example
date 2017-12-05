@@ -958,7 +958,7 @@ ap_thread(void)
 	    // run ap funciton
 	    // AP_interface.Avoid_Potential_run();
 	    write_ap_res(AP_interface.Avoid_Potential_run());
-	    usleep(80000);   // Stream at 10Hz
+	    usleep(40000);   // Stream at 10Hz
 	}
 
 	// signal end

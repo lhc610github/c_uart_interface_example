@@ -20,10 +20,10 @@ using namespace std;
 #define MAX_NUM_VEHICLE 4
 #define PERCEIVED_RADIUS 1.2
 #define DIMENSION 3
-#define CONFLICT_PARAM_PA 0.3
+#define CONFLICT_PARAM_PA 0.4
 #define CONFLICT_PARAM_RA 0.6
 #define CONFLICT_PARAM_NJ 1.0
-#define CONFLICT_PARAM_EA 0.25
+#define CONFLICT_PARAM_EA 0.3
 
 uint64_t ap_get_time_usec();
 

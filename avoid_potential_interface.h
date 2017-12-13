@@ -18,12 +18,12 @@ using namespace std;
 
 #define AVOID_POTENTIAL_TIMEOUT 1000000 //1s
 #define MAX_NUM_VEHICLE 4
-#define PERCEIVED_RADIUS 1.2
+#define PERCEIVED_RADIUS 0.8
 #define DIMENSION 3
 #define CONFLICT_PARAM_PA 0.5
-#define CONFLICT_PARAM_RA 1.0
+#define CONFLICT_PARAM_RA 0.8
 #define CONFLICT_PARAM_NJ 1.0
-#define CONFLICT_PARAM_EA 0.35
+#define CONFLICT_PARAM_EA 0.25
 
 uint64_t ap_get_time_usec();
 

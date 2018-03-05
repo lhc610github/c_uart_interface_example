@@ -362,6 +362,7 @@ write_ca_traject()
             float _acc_d[4];
             if (_traject_vaild)
             {
+				pthread_mutex_lock(&lcm_interface.l_u_t_handler.traject_pthread_lock);
               /* caculate the P_d */
                for (int i = 0; i < 4 ;i++)
                {
@@ -412,6 +413,7 @@ write_ca_traject()
                     }
                     _acc_d[i] = (float)_temp_sum;
                }
+				pthread_mutex_unlock(&lcm_interface.l_u_t_handler.traject_pthread_lock);
 
               /* send the message */
                //printf("P_d : [ %.2f , %.2f , %.2f , %.2f ]\n",_P_d[0],_P_d[1],_P_d[2],_P_d[3]);

@@ -154,13 +154,16 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
     PC_time = msg->timestamp;
     num_keyframe= msg->num_keyframe;
     order_p_1 = msg->order_p_1;
-    t[0] = 0;
+    //t[0] = 0;
+    t.clear();
+    t.push_back(0);
     for (int i=0; i< num_keyframe; i++)
     {
-        t[i+1] = msg->t[i];
+        //t[i+1] = msg->t[i];
+        t.push_back(msg->t[i]);
     }
     printf(" get traject.t \n");
-    for (int i=0; i< num_keyframe; i++)
+    /*for (int i=0; i< num_keyframe; i++)
     {
         for (int k=0; k< 4; k++)
         {
@@ -169,6 +172,21 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
                 traject[i][j][k] = msg->traject[i][j][k];
             }
         }
+    }*/
+    traject.clear();
+    for (int i=0; i < num_keyframe; i++)
+    {
+        traject_poly_s traject_poly;
+        for (int j=0; j < order_p_1; j++)
+        {
+            traject_factor_s traject_factor;
+            traject_factor.factor[0] = msg->traject[i][j][0]; //x
+            traject_factor.factor[1] = msg->traject[i][j][1]; //y
+            traject_factor.factor[2] = msg->traject[i][j][2]; //z
+            traject_factor.factor[3] = msg->traject[i][j][3]; //yaw
+            traject_poly.poly_func.push_back(traject_factor);
+        }
+        traject.push_back(traject_poly);
     }
     printf(" get traject.traject \n");
 	pthread_mutex_unlock(&traject_pthread_lock);

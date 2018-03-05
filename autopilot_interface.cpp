@@ -374,7 +374,7 @@ write_ca_traject()
                         {
                            _temp_poly_p_t *= _delta_t;
                         }
-                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index][j][i];
+                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index].poly_func[j].factor[i];
                     }
                     _P_d[i] = (float)_temp_sum;
                }
@@ -391,7 +391,7 @@ write_ca_traject()
                         {
                            _temp_poly_p_t *= _delta_t;
                         }
-                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index][j][i] * (_order_p_1 -1 -j);
+                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index].poly_func[j].factor[i] * (_order_p_1 -1 -j);
                     }
                     _vel_d[i] = (float)_temp_sum;
                }
@@ -408,7 +408,7 @@ write_ca_traject()
                         {
                            _temp_poly_p_t *= _delta_t;
                         }
-                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index][j][i] * (_order_p_1 -1 -j) * (_order_p_1 -2 -j);
+                        _temp_sum  += _temp_poly_p_t * lcm_interface.l_u_t_handler.traject[_index].poly_func[j].factor[i] * (_order_p_1 -1 -j) * (_order_p_1 -2 -j);
                     }
                     _acc_d[i] = (float)_temp_sum;
                }

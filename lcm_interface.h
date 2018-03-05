@@ -25,6 +25,20 @@ uint64_t lcm_get_time_usec();
 void* start_lcm_interface_send_thread(void *args);
 void* start_lcm_subscribe_thread(void *args); // multi sub for uav_status
 void* start_lcm_u_t_subscribe_thread(void *args); // sub for uav_traject
+struct traject_factor_s
+{
+    /*double x;
+    double y;
+    double z;
+    double yaw;*/
+    double factor[4];
+};
+
+struct traject_poly_s
+{
+    std::vector<traject_factor_s> poly_func;
+};
+
 class Lcm_u_s_Sub_Handler
 {
 
@@ -66,8 +80,9 @@ public:
     uint64_t PC_time; //us PC send traject time
     int num_keyframe; // less than 10
     int order_p_1; // less than 10
-    double t[11];
-    double traject[10][10][4]; // num_keyframe|order_p_1|4
+    std::vector<double> t;
+    std::vector<traject_poly_s> traject;
+    //double traject[10][10][4]; // num_keyframe|order_p_1|4
     bool has_received;
     pthread_mutex_t traject_pthread_lock;
     //uint64_t last_receive_time; //us

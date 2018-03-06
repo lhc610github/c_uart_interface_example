@@ -450,6 +450,34 @@ write_ca_traject()
             }
         }
     }
+                mavlink_ca_traject_res_t ca_traject_res;
+                ca_traject_res.PC_time_usec = (uint64_t) lcm_interface.l_u_t_handler.PC_time;
+                ca_traject_res.time_usec = (uint64_t) get_time_usec();
+                for (int i=0 ; i<4 ;i++)
+                {
+                    ca_traject_res.P_d[i] = _P_d[i];
+                    ca_traject_res.vel_d[i] = _vel_d[i];
+                    ca_traject_res.acc_d[i] = _acc_d[i];
+                }
+                // --------------------------------------------------------------------------
+                //   ENCODE
+                // --------------------------------------------------------------------------
+
+                mavlink_message_t message;
+                mavlink_msg_ca_traject_res_encode(system_id, companion_id, &message, &ca_traject_res);
+
+
+                // --------------------------------------------------------------------------
+                //   WRITE
+                // --------------------------------------------------------------------------
+                pthread_mutex_lock(&write_msg_pthread_lock);
+                // do the write
+                int len = write_message(message);
+
+                // check the write
+                if ( len <= 0 )
+                    fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
+                pthread_mutex_unlock(&write_msg_pthread_lock);
 	pthread_mutex_unlock(&lcm_interface.l_u_t_handler.traject_pthread_lock);
 	return;
 }

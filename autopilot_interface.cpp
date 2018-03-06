@@ -455,9 +455,9 @@ write_ca_traject()
                 ca_traject_res.time_usec = (uint64_t) get_time_usec();
                 for (int i=0 ; i<4 ;i++)
                 {
-                    ca_traject_res.P_d[i] = _P_d[i];
-                    ca_traject_res.vel_d[i] = _vel_d[i];
-                    ca_traject_res.acc_d[i] = _acc_d[i];
+                    ca_traject_res.P_d[i] = 1.0f;
+                    ca_traject_res.vel_d[i] = 2.3f;
+                    ca_traject_res.acc_d[i] = 2.4f;
                 }
                 // --------------------------------------------------------------------------
                 //   ENCODE

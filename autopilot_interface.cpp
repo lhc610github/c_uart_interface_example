@@ -473,7 +473,7 @@ write_ca_traject()
                 pthread_mutex_lock(&write_msg_pthread_lock);
                 // do the write
                 int len = write_message(message);
-				printf("11\n");
+				printf("11 %d \n",len);
                 // check the write
                 if ( len <= 0 )
                     fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");

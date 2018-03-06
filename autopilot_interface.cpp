@@ -450,7 +450,7 @@ write_ca_traject()
             }
         }
     }
-                mavlink_ca_traject_res_t ca_traject_res;
+                /*mavlink_ca_traject_res_t ca_traject_res;
                 ca_traject_res.PC_time_usec = (uint64_t) lcm_interface.l_u_t_handler.PC_time;
                 ca_traject_res.time_usec = (uint64_t) get_time_usec();
                 for (int i=0 ; i<4 ;i++)
@@ -473,11 +473,11 @@ write_ca_traject()
                 pthread_mutex_lock(&write_msg_pthread_lock);
                 // do the write
                 int len = write_message(message);
-				printf("11 %d \n",len);
+				//printf("11 %d \n",len);
                 // check the write
                 if ( len <= 0 )
                     fprintf(stderr,"WARNING: could not send CA_TRAJECT \n");
-                pthread_mutex_unlock(&write_msg_pthread_lock);
+                pthread_mutex_unlock(&write_msg_pthread_lock);*/
 	pthread_mutex_unlock(&lcm_interface.l_u_t_handler.traject_pthread_lock);
 	return;
 }

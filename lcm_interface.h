@@ -36,6 +36,7 @@ struct traject_factor_s
 
 struct traject_poly_s
 {
+    /* 9 8 ... 1 0 */
     std::vector<traject_factor_s> poly_func;
 };
 
@@ -65,6 +66,12 @@ public:
     pthread_mutex_t status_pthread_lock;
 };
 
+    enum calculate_type {
+        NO_CALCU = 0,
+        METHOD1_CAL = 1,
+        METHOD2_CAL = 2
+    };
+
 class Lcm_u_t_Sub_Handler
 {
 
@@ -75,6 +82,9 @@ public:
     bool init_flage;
     void reset_mem();
     void lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const uav_traject::uav_traject_t* msg);
+    void lcm_u_t_subscrib2_function(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const uav_traject::uav_traject_t* msg);
+
+    calculate_type cal_method;
 
     uint64_t receive_time; //us
     uint64_t PC_time; //us PC send traject time

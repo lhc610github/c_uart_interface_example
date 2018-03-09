@@ -103,6 +103,7 @@ bool Lcm_u_s_Sub_Handler:: check_timeout() {
 // ---------------------------------------------------------------------------------------------------
 Lcm_u_t_Sub_Handler:: Lcm_u_t_Sub_Handler() { 
     reset_mem();
+    cal_method = NO_CALCU;
 	int result = pthread_mutex_init(&traject_pthread_lock, NULL);
 	if ( result != 0 )
 	{
@@ -149,6 +150,7 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
         }
     }
     printf(" traject print done \n"); */
+    cal_method = METHOD1_CAL;
     init_flage = true;
     receive_time = lcm_get_time_usec();
     PC_time = msg->timestamp;
@@ -162,7 +164,7 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
         //t[i+1] = msg->t[i];
         t.push_back(msg->t[i]);
     }
-    printf(" get traject.t \n");
+    printf(" get traject.t m1\n");
     /*for (int i=0; i< num_keyframe; i++)
     {
         for (int k=0; k< 4; k++)
@@ -188,7 +190,78 @@ void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib_function(const lcm::ReceiveBuffer* r
         }
         traject.push_back(traject_poly);
     }
-    printf(" get traject.traject \n");
+    printf(" get traject.traject m1\n");
+	pthread_mutex_unlock(&traject_pthread_lock);
+}
+
+void Lcm_u_t_Sub_Handler:: lcm_u_t_subscrib2_function(const lcm::ReceiveBuffer* rbuf,
+        const std::string& chan,
+        const uav_traject::uav_traject_t* msg) {
+	pthread_mutex_lock(&traject_pthread_lock);
+    /*printf("Received message on channel \"%s\":\n", chan.c_str());
+    printf(" timestamp = %lld\n", msg->timestamp);
+    printf(" num_keyframe = %d\n", msg->num_keyframe);
+    printf(" order+1 = %d\n", msg->order_p_1);
+    printf(" t = [");
+    for (int i=0; i< msg->num_keyframe;i++)
+        printf("%.2f ",msg->t[i]);
+    printf(" ]\n");
+    printf("trajectory:\n");
+    for (int i=0; i< msg->num_keyframe; i++)
+    {
+        printf("\tphase%d:\n",i);
+        for (int k=0; k< 4; k++)
+        {
+        printf("\t\t");
+            for (int j=0; j< msg->order_p_1; j++)
+            {
+                printf("%.2f ",msg->traject[i][j][k]);
+            }
+        printf("\n");
+        }
+    }
+    printf(" traject print done \n"); */
+    cal_method = METHOD2_CAL;
+    init_flage = true;
+    receive_time = lcm_get_time_usec();
+    PC_time = msg->timestamp;
+    num_keyframe= msg->num_keyframe;
+    order_p_1 = msg->order_p_1;
+    //t[0] = 0;
+    t.clear();
+    t.push_back(0);
+    for (int i=0; i< num_keyframe; i++)
+    {
+        //t[i+1] = msg->t[i];
+        t.push_back(msg->t[i]);
+    }
+    printf(" get traject.t m2\n");
+    /*for (int i=0; i< num_keyframe; i++)
+    {
+        for (int k=0; k< 4; k++)
+        {
+            for (int j=0; j< order_p_1; j++)
+            {
+                traject[i][j][k] = msg->traject[i][j][k];
+            }
+        }
+    }*/
+    traject.clear();
+    for (int i=0; i < num_keyframe; i++)
+    {
+        traject_poly_s traject_poly;
+        for (int j=0; j < order_p_1; j++)
+        {
+            traject_factor_s traject_factor;
+            traject_factor.factor[0] = msg->traject[i][j][0]; //x
+            traject_factor.factor[1] = msg->traject[i][j][1]; //y
+            traject_factor.factor[2] = msg->traject[i][j][2]; //z
+            traject_factor.factor[3] = msg->traject[i][j][3]; //yaw
+            traject_poly.poly_func.push_back(traject_factor);
+        }
+        traject.push_back(traject_poly);
+    }
+    printf(" get traject.traject m2\n");
 	pthread_mutex_unlock(&traject_pthread_lock);
 }
 // --------------------------------------------------------------------------------------------------- 
@@ -402,6 +475,14 @@ void Lcm_Interface:: traject_subscrib_thread() {
            ss1<<mav_sys_id;
 	       l_u_t_handler.sub_name_channel = ss1.str();
            lcm.subscribe(l_u_t_handler.sub_name_channel, &Lcm_u_t_Sub_Handler::lcm_u_t_subscrib_function, &l_u_t_handler);
+           cout << "Subscrib Channel :" << ss1.str() << endl;
+           ss1.str("");
+           ss1<<base_channel;
+           ss1<<traject_channel;
+           ss1<<"2_";
+           ss1<<mav_sys_id;
+	       l_u_t_handler.sub_name_channel = ss1.str();
+           lcm.subscribe(l_u_t_handler.sub_name_channel, &Lcm_u_t_Sub_Handler::lcm_u_t_subscrib2_function, &l_u_t_handler);
            cout << "Subscrib Channel :" << ss1.str() << endl;
     while( ! time_to_exit )
     {

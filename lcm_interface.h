@@ -122,7 +122,7 @@ public:
 	int mav_sys_id;
     int max_num_quad;
 	
-    Lcm_u_s_Sub_Handler l_s_handler[4];
+    Lcm_u_s_Sub_Handler l_s_handler[5];
     Lcm_u_t_Sub_Handler l_u_t_handler;
 
 	string name_channel;

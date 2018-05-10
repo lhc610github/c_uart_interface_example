@@ -285,7 +285,7 @@ Lcm_Interface:: Lcm_Interface() : lcm{"udpm://239.255.76.67:7667?ttl=1"}{ //  //
     send_tid = 0; // send thread id
 
     mav_sys_id = 0;//mav_sys_id_;
-    max_num_quad = 4;
+    max_num_quad = 5;
 
     has_init = false;
 
@@ -298,7 +298,7 @@ Lcm_Interface:: ~Lcm_Interface() {}
 // --------------------------------------------------------------------------------------------------- 
 int Lcm_Interface:: init(int mav_sys_id_) {
     mav_sys_id = mav_sys_id_;
-    max_num_quad = 4;
+    max_num_quad = 5;
     stringstream ss;
     ss<<base_channel;
     ss<<status_channel;

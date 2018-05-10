@@ -17,7 +17,7 @@ using std::string;
 using namespace std;
 
 #define AVOID_POTENTIAL_TIMEOUT 1000000 //1s
-#define MAX_NUM_VEHICLE 4
+#define MAX_NUM_VEHICLE 5
 #define PERCEIVED_RADIUS 1.0
 #define DIMENSION 3
 #define CONFLICT_PARAM_PA 0.3

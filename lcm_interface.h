@@ -118,7 +118,7 @@ public:
 	void start_send_thread();
     void status_subscrib_thread();
     void traject_subscrib_thread();
-	float att_q_from_euler[4];// quaternion att from euler
+	float att_q_from_euler[5];// quaternion att from euler
 	lcm::LCM lcm;
 
 private:

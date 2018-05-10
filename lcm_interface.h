@@ -97,7 +97,7 @@ public:
 	int mav_sys_id;
     int max_num_quad;
 	
-    Lcm_u_s_Sub_Handler l_s_handler[4];
+    Lcm_u_s_Sub_Handler l_s_handler[5];
     Lcm_u_t_Sub_Handler l_u_t_handler;
 
 	string name_channel;
@@ -118,7 +118,7 @@ public:
 	void start_send_thread();
     void status_subscrib_thread();
     void traject_subscrib_thread();
-	float att_q_from_euler[5];// quaternion att from euler
+	float att_q_from_euler[4];// quaternion att from euler
 	lcm::LCM lcm;
 
 private:
